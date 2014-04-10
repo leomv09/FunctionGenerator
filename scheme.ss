@@ -8,18 +8,17 @@
   (lambda (n k)
     (/ (factorial n) (* (factorial k) (factorial (- n k))))))
 
-(define acumulada-aux 
+(define acumulada-aux
   (lambda (l1 l2)
     (cond
       ((null? l1) l2)
+      ((= (length l1) 1) (acumulada-aux (cdr l1) (append l2 (list ( list (caar l1) 1)))))
       ((null? l2) (acumulada-aux (cdr l1) (append l2 (list (car l1)))))
       (else (acumulada-aux (cdr l1) (append l2 (list (list (caar l1) (+ (cadar l1) (cadar (reverse l2)))))))))))
 
 (define acumulada
   (lambda (l)
-    (cond 
-      ((null? l) '())
-      (else (acumulada-aux l '())))))
+    (acumulada-aux l '())))
 
 (define buscar-en-tabla
   (lambda (x l)
@@ -27,16 +26,16 @@
       ((<= x (cadar l)) (caar l))
       (else (buscar-en-tabla x (cdr l))))))
 
+(define generar-tabla
+  (lambda (n fun)
+    (cond
+      ((< n 0) '())
+      (else (append (generar-tabla (- n 1) fun) (list (list n (fun n))))))))
+
 (define tabla
   (lambda (l)
-    (lambda (x)
-      (buscar-en-tabla x (acumulada l)))))
-
-(define generar-tabla
-  (lambda (k n fun)
-    (cond
-      ((> k n) '())
-      (else (append (list (list k (fun k))) (generar-tabla (+ k 1) n fun))))))
+    (lambda (k)
+      (buscar-en-tabla k (acumulada l)))))
 
 (define binomial-aux
   (lambda (n p)
@@ -45,5 +44,5 @@
 
 (define binomial
   (lambda (n p)
-    (lambda (x)
-      (buscar-en-tabla x (acumulada (generar-tabla 0 n (binomial-aux n p)))))))
+    (lambda (k)
+      (buscar-en-tabla k (acumulada (generar-tabla n (binomial-aux n p)))))))

@@ -1,2 +1,19 @@
-# Back Up File
+# Back Up Files #
 *.*~
+
+# NetBeans Projects #
+Graficador/nbproject/private/
+Graficador/build/
+Graficador/nbbuild/
+Graficador/dist/
+Graficador/nbdist/
+Graficador/nbactions.xml
+Graficador/nb-configuration.xml
+
+# Class Files #
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear

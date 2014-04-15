@@ -1,3 +1,33 @@
+(define read-file
+  (lambda (path)
+    (let ((port (open-input-file path)))
+      (let funct ((next-object (read port)))
+        (cond 
+          ((eof-object? next-object) (begin (close-input-port port) '()))
+          (else (cons next-object (funct (read port)))))))))
+
+; Recibe: f = Una función para aplicarle a cada elemento entre [k, n[
+;         k = Inicio de la suma (Incluyente).
+;         n = Final de la suma (Excluyente).
+; Retorna: La suma de la función f evaluada en cada elemento de [k, n[
+; Ejemplo: (suma abs 0 5) => 10.
+(define suma
+  (lambda (f k n)
+    (cond
+      ((>= k n) 0)
+      (else (+ (f k) (suma f (+ k 1) n))))))
+
+; Recibe: f = Función a integrar.
+;         a = Límite inferior de la integral.
+;         b = Límite superior de la integral.
+;         steps = Número de diviciones a realizar, entre más diviciones más precisión.
+; Retorna: La integral desde a hasta b de f(x)dx.
+; Ejemplo: (integral sin 0 1 1000) => 0.4596976941318605.
+(define integral
+  (lambda (f a b steps)
+    (define h (/ (- b a) steps))
+    (* (/ h 6) (suma (lambda(x) (+ (f (+ a (* h x))) (f (+ a (* h x) h)) (* 4 (f (+ a (* h x) (/ h 2)))))) 0 steps))))
+
 (define factorial
   (lambda (n)
     (cond

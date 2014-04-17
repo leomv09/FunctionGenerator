@@ -1,5 +1,6 @@
 # Back Up Files #
 *.*~
+*.bak
 
 # NetBeans Projects #
 Graficador/nbproject/private/

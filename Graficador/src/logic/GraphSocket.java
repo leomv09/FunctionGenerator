@@ -15,8 +15,6 @@ public class GraphSocket extends Thread{
     
     /**
      * Crea un nuevo objeto de tipo GraphSocket.
-     * 
-     * @param port Puerto por el cual escuchará el servidor.
      */
     public GraphSocket() {
         this.data = new GraphData();

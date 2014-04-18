@@ -35,7 +35,7 @@ public class GraphSocket extends Thread {
         }
         catch(IOException e)
         {
-           System.out.println("Error al intentar escuchar al puerto ");
+           System.out.println("Error al intentar escuchar al puerto " + port);
            System.out.println("Error: " + e);
         }   
     }
@@ -92,6 +92,9 @@ public class GraphSocket extends Thread {
                     this.fireEvent(this.dataCount++, input);
                 }
              }
+             //Se cierra la conexión.
+             this.in.close();
+             this.serverSocket.close();
 
             }
             catch(IOException e)

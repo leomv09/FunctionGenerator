@@ -1,14 +1,14 @@
 package ui;
 
-import logic.Socket;
+import logic.GraphSocket;
 
 public class DistributionGraphFrame extends javax.swing.JFrame {
     
-    private Socket socket;
+    private GraphSocket socket;
     
     public DistributionGraphFrame() {
         initComponents();
-        this.socket = new Socket();
+        this.socket = new GraphSocket();
     }
 
     /**

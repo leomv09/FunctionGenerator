@@ -9,6 +9,8 @@ public class GraphData {
     
     private int[] keys;
     private int[] values;
+    private int range;
+    private int functionType;
     
     /**
      * Crea un nuevo objeto GraphData.
@@ -16,6 +18,8 @@ public class GraphData {
     public GraphData() {
         this.keys = new int[0];
         this.values = new int[0];
+        this.range = -1;
+        this.functionType = 0;
     }
 
     /**
@@ -25,6 +29,7 @@ public class GraphData {
      * @param fin Final del rango.
      */
     public void setRange(int ini, int fin) {
+        this.range = fin;
         this.keys = new int[fin-ini+1];
         this.values = new int[fin-ini+1];
         
@@ -32,6 +37,17 @@ public class GraphData {
             this.keys[i] = ini+i;
             this.values[i] = 0;
         }
+    }
+    
+    
+    /**
+     * Establece el tipo de función que mostrará el gráfico.
+     * 
+     * @param type Tipo de función.
+     */
+    public void setFunctionType(int type)
+    {
+        this.functionType = type;
     }
     
     /**
@@ -64,4 +80,23 @@ public class GraphData {
         return this.values;
     }
     
+    /**
+     * Obtiene el rango de valores del gráfico.
+     * 
+     * @return El rango de valores del gráfico.
+     */
+    public int getRange()
+    {
+        return this.range;
+    }
+    
+    /**
+     * Obtiene el tipo de función a mostrar en el gráfico.
+     * 
+     * @return El tipo de función a mostrar en el gráfico.
+     */
+    public int getFunctionType()
+    {
+        return this.functionType;
+    }
 }

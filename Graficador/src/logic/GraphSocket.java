@@ -1,29 +1,32 @@
 package logic;
 
-import java.net.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GraphSocket extends Thread{
     
+    private List listeners;
     private ServerSocket serverSocket;//Socket que espera las conexiones.
     private Socket clientSocket;//El socket que se conecta.
     private BufferedReader in;// Buffer de lectura.
-    public GraphData data;// Controlador de datos para el gráfico.
-    private int dataStart;// Inicio del rango de valores  para el gráfico.
-    private int dataEnd;// Final del rango de valores para el gráfico
     private int dataCount;// Contador de datos recibidos.
     
     /**
      * Crea un nuevo objeto de tipo GraphSocket.
+     * @param port El puerto en que se va recibir la información.
      */
-    public GraphSocket() {
-        this.data = new GraphData();
+    public GraphSocket(int port) {
+        this.listeners = new ArrayList();
         this.dataCount = 0;
-        this.dataStart = 0;
-        this.dataEnd = 0;
+        
         try
         {
-            this.serverSocket = new ServerSocket(2020);
+            this.serverSocket = new ServerSocket(port);
         }
         catch(IOException e)
         {
@@ -32,26 +35,21 @@ public class GraphSocket extends Thread{
         }   
     }
     
-    /**
-     * Establece el objeto encargado de manejar los datos para el gráfico
-     * 
-     * @param Data nuevo objeto que maneja los datos del gráfico.
-     */
-    public void setData(GraphData Data)
-    {
-        this.data = Data;
+    public synchronized void addEventListener(NewDataRecievedListener listener) {
+        listeners.add(listener);
     }
     
-    /**
-     * Obtiene el controlador de datos del gráfico.
-     * 
-     * @return El controlador de datos del gráfico.
-     */
-    public GraphData getData()
-    {
-        return this.data;
+    public synchronized void removeEventListener(NewDataRecievedListener listener) {
+        listeners.remove(listener);
     }
-    
+
+    private synchronized void fireEvent(int dataCount, int data) {
+      NewDataRecievedEvent event = new NewDataRecievedEvent(this, dataCount, data);
+      java.util.Iterator i = listeners.iterator();
+      while (i.hasNext()) {
+        ((NewDataRecievedListener) i.next()).handleEvent(event);
+      }
+    }
     
     /*
      Método principal que espera una conexión y luego recibe los datos y los procesa.
@@ -68,25 +66,10 @@ public class GraphSocket extends Thread{
                 this.in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 int input = in.read();
 
-                   if(input != -1)
-                   {
-                       switch(dataCount)
-                       {
-                           case 0: this.data.setFunctionType(input);
-                                   this.dataCount++;
-                               break;
-                           case 1: this.dataStart = input;
-                                   this.dataCount++;
-                               break;
-                           case 2: this.dataEnd = input;
-                                   this.data.setRange(this.dataStart, this.dataEnd);
-                                   this.dataCount++;
-                               break;
-                           default: this.data.incrementCount(input);
-                                    this.dataCount++;
-                               break;
-                       }
-                   }
+                if (input != -1)
+                {
+                    this.fireEvent(this.dataCount++, input);
+                }
              }
 
             }

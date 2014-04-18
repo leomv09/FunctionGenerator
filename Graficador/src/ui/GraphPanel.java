@@ -12,12 +12,8 @@ public class GraphPanel extends javax.swing.JPanel {
         this.data = new GraphData();
     }
     
-    public void setColumnsRange(int ini, int fin) {
-        this.data.setRange(ini, fin);
-    }
-    
-    public void incrementColumn(int column) {
-        this.data.incrementCount(column);
+    public GraphData getGraphData() {
+        return this.data;
     }
     
     @Override

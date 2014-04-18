@@ -9,7 +9,8 @@ public class GraphData {
     
     private int[] keys;
     private int[] values;
-    private int range;
+    private int ini_range;
+    private int fin_range;
     private int functionType;
     
     /**
@@ -18,27 +19,28 @@ public class GraphData {
     public GraphData() {
         this.keys = new int[0];
         this.values = new int[0];
-        this.range = -1;
+        this.ini_range = 0;
+        this.fin_range = 0;
         this.functionType = 0;
     }
-
-    /**
-     * Establece el rango en el que estarán los valores del gráfico.
-     * 
-     * @param ini Inicio del rango.
-     * @param fin Final del rango.
-     */
-    public void setRange(int ini, int fin) {
-        this.range = fin;
-        this.keys = new int[fin-ini+1];
-        this.values = new int[fin-ini+1];
+    
+    public void setIniRange(int ini)
+    {
+        this.ini_range = ini;
+    }
+    
+    public void setFinRange(int fin)
+    {
+        this.fin_range = fin;
         
-        for (int i=0; i<=fin-ini; i++) {
-            this.keys[i] = ini+i;
+        this.keys = new int[this.fin_range - this.ini_range + 1];
+        this.values = new int[this.fin_range - this.ini_range + 1];
+        
+        for (int i=0; i<this.keys.length; i++) {
+            this.keys[i] = this.ini_range + i;
             this.values[i] = 0;
         }
     }
-    
     
     /**
      * Establece el tipo de función que mostrará el gráfico.
@@ -81,22 +83,19 @@ public class GraphData {
     }
     
     /**
-     * Obtiene el rango de valores del gráfico.
-     * 
-     * @return El rango de valores del gráfico.
-     */
-    public int getRange()
-    {
-        return this.range;
-    }
-    
-    /**
      * Obtiene el tipo de función a mostrar en el gráfico.
      * 
      * @return El tipo de función a mostrar en el gráfico.
      */
-    public int getFunctionType()
-    {
+    public int getFunctionType() {
         return this.functionType;
+    }
+    
+    public int getIniRange() {
+        return this.ini_range;
+    }
+    
+    public int getFinRange() {
+        return this.fin_range;
     }
 }

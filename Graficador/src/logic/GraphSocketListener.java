@@ -1,9 +1,17 @@
 package logic;
 
+/**
+ * La clase GraphSocketListener implementa los métodos necesarios para procesar la información proveniente del socket.
+ */
 public class GraphSocketListener implements NewDataRecievedListener
 {
     private GraphData data;
     
+    /**
+     * Crea un nuevo objeto GraphSocketListener.
+     * 
+     * @param data Objeto de tipo GraphData en donde se guardará la información proveniente del socket.
+     */
     public GraphSocketListener(GraphData data)
     {
         this.data = data;
@@ -11,7 +19,6 @@ public class GraphSocketListener implements NewDataRecievedListener
     
     @Override
     public void handleEvent(NewDataRecievedEvent e) {
-        System.out.println("Data: " + e.getDataCount() + " " + e.getData());
         switch(e.getDataCount())
         {
             case 0:

@@ -11,7 +11,6 @@ public class DistributionGraphFrame extends javax.swing.JFrame {
         initComponents();
         this.socket = new GraphSocket(2020);
         this.socket.addEventListener( new GraphSocketListener(this.graphPanel.getGraphData()) );
-        this.socket.run();
     }
 
     /**

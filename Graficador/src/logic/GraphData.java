@@ -24,11 +24,21 @@ public class GraphData {
         this.functionType = 0;
     }
     
+    /**
+     * Establece el inicio del rango del gráfico.
+     * 
+     * @param ini El inicio del rango.
+     */
     public void setIniRange(int ini)
     {
         this.ini_range = ini;
     }
     
+    /**
+     * Establece el final del rango del gráfico.
+     * 
+     * @param fin El final del rango.
+     */
     public void setFinRange(int fin)
     {
         this.fin_range = fin;
@@ -45,11 +55,13 @@ public class GraphData {
     /**
      * Establece el tipo de función que mostrará el gráfico.
      * 
-     * @param type Tipo de función.
+     * @param type Tipo de la función. DISCRETA = 0, CONTINUA = 1.
      */
     public void setFunctionType(int type)
     {
-        this.functionType = type;
+        if (type == 0 || type == 1) {
+            this.functionType = type;
+        }
     }
     
     /**
@@ -91,10 +103,20 @@ public class GraphData {
         return this.functionType;
     }
     
+    /**
+     * Obtiene el inicio del rango del gráfico.
+     * 
+     * @return El inicio del rango.
+     */
     public int getIniRange() {
         return this.ini_range;
     }
     
+    /**
+     * Obtiene el final del rango del gráfico.
+     * 
+     * @return El final del rango.
+     */
     public int getFinRange() {
         return this.fin_range;
     }

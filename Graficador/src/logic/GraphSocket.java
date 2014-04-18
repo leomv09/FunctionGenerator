@@ -8,16 +8,21 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GraphSocket extends Thread{
+/**
+ * La clase GraphSocket proporciona un método para obtener datos provenientes de una conexión en red
+ * por medio de Sockets.
+ */
+public class GraphSocket extends Thread {
     
-    private List listeners;
-    private ServerSocket serverSocket;//Socket que espera las conexiones.
-    private Socket clientSocket;//El socket que se conecta.
+    private List listeners; // Conjunto de listeners del socket.
+    private ServerSocket serverSocket;// Socket que espera las conexiones.
+    private Socket clientSocket;// El socket que se conecta.
     private BufferedReader in;// Buffer de lectura.
     private int dataCount;// Contador de datos recibidos.
     
     /**
      * Crea un nuevo objeto de tipo GraphSocket.
+     * 
      * @param port El puerto en que se va recibir la información.
      */
     public GraphSocket(int port) {
@@ -35,14 +40,30 @@ public class GraphSocket extends Thread{
         }   
     }
     
+    /**
+     * Agrega un listener al conjunto de listeners.
+     * 
+     * @param listener El nuevo listener.
+     */
     public synchronized void addEventListener(NewDataRecievedListener listener) {
         listeners.add(listener);
     }
     
+    /**
+     * Elimina un listener del conjunto de listeners.
+     * 
+     * @param listener El listener a eliminar.
+     */
     public synchronized void removeEventListener(NewDataRecievedListener listener) {
         listeners.remove(listener);
     }
 
+    /**
+     * Dispara un evento a todos los listener avisando que hay un nuevo dato disponible.
+     * 
+     * @param dataCount El número de datos que han llegado hasta el momento.
+     * @param data El último dato que llegó.
+     */
     private synchronized void fireEvent(int dataCount, int data) {
       NewDataRecievedEvent event = new NewDataRecievedEvent(this, dataCount, data);
       java.util.Iterator i = listeners.iterator();
@@ -51,8 +72,8 @@ public class GraphSocket extends Thread{
       }
     }
     
-    /*
-     Método principal que espera una conexión y luego recibe los datos y los procesa.
+    /**
+     * Método principal que espera una conexión y luego recibe los datos.
      */
     @Override
     public void run()

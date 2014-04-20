@@ -28,27 +28,43 @@ public class GraphData {
      * Establece el inicio del rango del gráfico.
      * 
      * @param ini El inicio del rango.
+     * @throws java.lang.Exception Si el inicio del rango no es un número positivo.
      */
-    public void setIniRange(int ini)
+    public void setIniRange(int ini) throws Exception
     {
-        this.ini_range = ini;
+        if (ini >= 0)
+        {
+            this.ini_range = ini;
+        }
+        else
+        {
+            throw new Exception("El inicio del rango debe ser positivo.");
+        }
     }
     
     /**
      * Establece el final del rango del gráfico.
      * 
      * @param fin El final del rango.
+     * @throws java.lang.Exception Si el final del rango es menor que el inicio. 
      */
-    public void setFinRange(int fin)
+    public void setFinRange(int fin) throws Exception
     {
-        this.fin_range = fin;
-        
-        this.keys = new int[this.fin_range - this.ini_range + 1];
-        this.values = new int[this.fin_range - this.ini_range + 1];
-        
-        for (int i=0; i<this.keys.length; i++) {
-            this.keys[i] = this.ini_range + i;
-            this.values[i] = 0;
+        if (fin >= this.ini_range)
+        {
+            this.fin_range = fin;
+            this.keys = new int[this.fin_range - this.ini_range + 1];
+            this.values = new int[this.fin_range - this.ini_range + 1];
+
+            for (int i=0; i<this.keys.length; i++)
+            {
+                this.keys[i] = this.ini_range + i;
+                this.values[i] = 0;
+            }
+        }
+        else
+        {
+            throw new Exception("El final del rango debe ser mayor que el inicio del mismo.");
         }
     }
     
@@ -56,11 +72,17 @@ public class GraphData {
      * Establece el tipo de función que mostrará el gráfico.
      * 
      * @param type Tipo de la función. DISCRETA = 0, CONTINUA = 1.
+     * @throws java.lang.Exception Si el tipo no es válido.
      */
-    public void setFunctionType(int type)
+    public void setFunctionType(int type) throws Exception
     {
-        if (type == 0 || type == 1) {
+        if (type == 0 || type == 1)
+        {
             this.functionType = type;
+        }
+        else
+        {
+            throw new Exception("La funcion debe ser 0 = Discreta o 1 = Continua.");
         }
     }
     
@@ -68,11 +90,19 @@ public class GraphData {
      * Incrementa el peso almacenado para cierto valor.
      * 
      * @param key Valor a incrementar.
+     * @throws java.lang.Exception Si el valor a incrementar no se encuentra entre el rango definido.
      */
-    public void incrementCount(int key) {
+    public void incrementCount(int key) throws Exception
+    {
         int index = Arrays.binarySearch(this.keys, key);
-        if (index != -1) {
+        
+        if (index >= 0)
+        {
             this.values[index]++;
+        }
+        else
+        {
+            throw new Exception("El valor a incrementar debe estar entre el rango definido.");
         }
     }
     

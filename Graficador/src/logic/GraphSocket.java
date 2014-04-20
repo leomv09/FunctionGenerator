@@ -1,12 +1,12 @@
 package logic;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.BufferedReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.LinkedList;
 
 /**
  * La clase GraphSocket proporciona un método para obtener datos provenientes de una conexión en red
@@ -14,30 +14,20 @@ import java.util.List;
  */
 public class GraphSocket extends Thread {
     
-    private List listeners; // Conjunto de listeners del socket.
+    private List<NewDataRecievedListener> listeners; // Conjunto de listeners del socket.
+    private int port; // El puerto a escuchar.
     private ServerSocket serverSocket;// Socket que espera las conexiones.
     private Socket clientSocket;// El socket que se conecta.
-    private BufferedReader in;// Buffer de lectura.
-    private int dataCount;// Contador de datos recibidos.
     
     /**
      * Crea un nuevo objeto de tipo GraphSocket.
      * 
      * @param port El puerto en que se va recibir la información.
      */
-    public GraphSocket(int port) {
-        this.listeners = new ArrayList();
-        this.dataCount = 0;
-        
-        try
-        {
-            this.serverSocket = new ServerSocket(port);
-        }
-        catch(IOException e)
-        {
-           System.out.println("Error al intentar escuchar al puerto " + port);
-           System.out.println("Error: " + e);
-        }   
+    public GraphSocket(int port)
+    {
+        this.listeners = new LinkedList<>();
+        this.port = port;
     }
     
     /**
@@ -61,47 +51,48 @@ public class GraphSocket extends Thread {
     /**
      * Dispara un evento a todos los listener avisando que hay un nuevo dato disponible.
      * 
-     * @param dataCount El número de datos que han llegado hasta el momento.
      * @param data El último dato que llegó.
      */
-    private synchronized void fireEvent(int dataCount, int data) {
-      NewDataRecievedEvent event = new NewDataRecievedEvent(this, dataCount, data);
-      java.util.Iterator i = listeners.iterator();
-      while (i.hasNext()) {
-        ((NewDataRecievedListener) i.next()).handleEvent(event);
+    private synchronized void fireEvent(String data) 
+    {
+      NewDataRecievedEvent event = new NewDataRecievedEvent(this, data);
+      
+      for (NewDataRecievedListener l : this.listeners)
+      {
+          l.handleEvent(event);
       }
     }
     
     /**
      * Método principal que espera una conexión y luego recibe los datos.
+     * Se dispara un evento de tipo NewDataRecievedEvent a cada listener cada vez
+     * que una nueva línea de texto a sido leída.
+     * Cada texto enviado debe terminar en un salto de línea.
      */
     @Override
     public void run()
     {
+        BufferedReader reader;
         try
-         {
-             this.clientSocket = this.serverSocket.accept();
-             
-             while(this.clientSocket.isConnected())
-             {
-                this.in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                int input = in.read();
+        {
+            this.serverSocket = new ServerSocket(this.port);
+            this.clientSocket = this.serverSocket.accept();
+            reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            String input;
 
-                if (input != -1)
-                {
-                    this.fireEvent(this.dataCount++, input);
-                }
-             }
-             //Se cierra la conexión.
-             this.in.close();
-             this.serverSocket.close();
-
-            }
-            catch(IOException e)
+            while (this.clientSocket.isConnected() && (input = reader.readLine()) != null)
             {
-               System.out.println("Error al intentar escuchar al puerto.");
-               System.out.println("Error: " + e);
-            } 
+               this.fireEvent(input);
+            }
+
+            reader.close();
+            this.serverSocket.close();
+        }
+        catch(IOException e)
+        {
+           System.out.println("Error al intentar escuchar al puerto.");
+           System.out.println("Error: " + e.getMessage());
+        }
     }
     
 }

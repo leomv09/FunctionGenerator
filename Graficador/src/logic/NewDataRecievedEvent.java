@@ -8,29 +8,17 @@ import java.util.EventObject;
  */
 public class NewDataRecievedEvent extends EventObject {
 
-    private int dataCount;
-    private int data;
+    private String data;
     
     /**
      * Crea un nuevo objeto NewDataRecievedEvent.
      * 
      * @param source Clase que disparó el evento.
-     * @param dataCount Total que datos que han llegado hasta el momento.
      * @param data Nuevo dato.
      */
-    public NewDataRecievedEvent(Object source, int dataCount, int data) {
+    public NewDataRecievedEvent(Object source, String data) {
         super(source);
-        this.dataCount = dataCount;
         this.data = data;
-    }
-    
-    /**
-     * Obtiene el total que datos que han llegado hasta el momento.
-     * 
-     * @return El total que datos que han llegado hasta el momento.
-     */
-    public int getDataCount() {
-        return this.dataCount;
     }
     
     /**
@@ -38,7 +26,7 @@ public class NewDataRecievedEvent extends EventObject {
      * 
      * @return El dato último dato que llegó.
      */
-    public int getData() {
+    public String getData() {
         return this.data;
     }
 }

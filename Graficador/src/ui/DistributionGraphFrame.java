@@ -1,7 +1,7 @@
 package ui;
 
 import logic.GraphSocket;
-import logic.GraphSocketListener;
+import logic.GraphSocketDataListener;
 
 public class DistributionGraphFrame extends javax.swing.JFrame {
     
@@ -10,7 +10,9 @@ public class DistributionGraphFrame extends javax.swing.JFrame {
     public DistributionGraphFrame() {
         initComponents();
         this.socket = new GraphSocket(2020);
-        this.socket.addEventListener( new GraphSocketListener(this.graphPanel.getGraphData()) );
+        this.socket.addEventListener( new GraphSocketDataListener(this.graphPanel.getGraphData()) );
+        this.socket.addEventListener( new GraphSocketGUIListener(this.graphPanel) );
+        this.socket.start();
     }
 
     /**

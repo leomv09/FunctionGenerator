@@ -1,12 +1,14 @@
 package logic;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.BufferedReader;
+import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * La clase GraphSocket proporciona un método para obtener datos provenientes de una conexión en red
@@ -14,10 +16,12 @@ import java.util.LinkedList;
  */
 public class GraphSocket extends Thread {
     
-    private List<NewDataRecievedListener> listeners; // Conjunto de listeners del socket.
-    private int port; // El puerto a escuchar.
-    private ServerSocket serverSocket;// Socket que espera las conexiones.
-    private Socket clientSocket;// El socket que se conecta.
+    private List<NewDataRecievedListener> listeners;
+    private ServerSocket server;
+    private Socket client;
+    private BufferedReader in;
+    private BufferedWriter out;
+    private int port;
     
     /**
      * Crea un nuevo objeto de tipo GraphSocket.
@@ -28,6 +32,10 @@ public class GraphSocket extends Thread {
     {
         this.listeners = new LinkedList<>();
         this.port = port;
+        this.server = null;
+        this.client = null;
+        this.in = null;
+        this.out = null;
     }
     
     /**
@@ -35,7 +43,8 @@ public class GraphSocket extends Thread {
      * 
      * @param listener El nuevo listener.
      */
-    public synchronized void addEventListener(NewDataRecievedListener listener) {
+    public synchronized void addEventListener(NewDataRecievedListener listener)
+    {
         listeners.add(listener);
     }
     
@@ -44,7 +53,8 @@ public class GraphSocket extends Thread {
      * 
      * @param listener El listener a eliminar.
      */
-    public synchronized void removeEventListener(NewDataRecievedListener listener) {
+    public synchronized void removeEventListener(NewDataRecievedListener listener)
+    {
         listeners.remove(listener);
     }
 
@@ -64,6 +74,32 @@ public class GraphSocket extends Thread {
     }
     
     /**
+     * Abre los puertos del socket y inicia los flujos de lectura y escritura.
+     * 
+     * @throws IOException Si no se pudo abrir correctamente un puerto.
+     */
+    private void connect() throws IOException
+    {
+        this.server = new ServerSocket(this.port);
+        this.client = this.server.accept();
+        this.in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+        this.out = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
+    }
+    
+    /**
+     * Cierra los flujos de lectura y escritura y los puertos del socket.
+     * 
+     * @throws IOException Si no se pudo cerrar correctamente un puerto o flujo.
+     */
+    private void close() throws IOException
+    {
+        this.out.close();
+        this.in.close();
+        this.client.close();
+        this.server.close();
+    }
+    
+    /**
      * Método principal que espera una conexión y luego recibe los datos.
      * Se dispara un evento de tipo NewDataRecievedEvent a cada listener cada vez
      * que una nueva línea de texto a sido leída.
@@ -72,27 +108,28 @@ public class GraphSocket extends Thread {
     @Override
     public void run()
     {
-        BufferedReader reader;
         try
         {
-            this.serverSocket = new ServerSocket(this.port);
-            this.clientSocket = this.serverSocket.accept();
-            reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            this.connect();
             String input;
 
-            while (this.clientSocket.isConnected() && (input = reader.readLine()) != null)
+            while ((input = this.in.readLine()) != null)
             {
                this.fireEvent(input);
             }
-
-            reader.close();
-            this.serverSocket.close();
+            
+            this.close();
         }
         catch(IOException e)
         {
-           System.out.println("Error al intentar escuchar al puerto.");
-           System.out.println("Error: " + e.getMessage());
+           System.out.println(this + " Error: " + e.getMessage());
         }
+    }
+    
+    @Override
+    public String toString()
+    {
+        return "[" + "GraphSocketClient localhost::" + this.port + "]";
     }
     
 }

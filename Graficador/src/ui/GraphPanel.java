@@ -9,15 +9,16 @@ public class GraphPanel extends javax.swing.JPanel {
 
     private GraphData data;
     
-    public GraphPanel() {
+    public GraphPanel()
+    {
         initComponents();
         this.data = new GraphData();
     }
     
-    public GraphData getGraphData() {
+    public GraphData getGraphData()
+    {
         return this.data;
     }
-    
     
     @Override
     protected void paintComponent(Graphics g) {

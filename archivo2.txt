@@ -1,0 +1,6 @@
+;; Cantidad de valores a generar
+2000
+;; Tipo de funcion
+uniforme
+;; Denicion de la funcion dado
+(uniforme-disc '(1 2 3 4 5 6))

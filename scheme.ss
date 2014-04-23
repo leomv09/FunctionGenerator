@@ -1,3 +1,5 @@
+(define pi 3.14159265359)
+
 (define read-file
   (lambda (path)
     (let ((port (open-input-file path)))
@@ -95,21 +97,19 @@
 ; *** Distribución Uniforme Discreta ***
 
 ; Recibe: l = Una lista de valores todos con la misma probabilidad de ser escogidos.
-; Retorna: Una función λ que dado un valor k devuelva la probabilidad de ser escogido.
-;          En este caso la probabilidad es igual para todos los valores.
-; Ejemplo: (uniforme-disc-aux '(2 4 6 8)) => #<procedure:lambda>.
-(define uniforme-disc-aux
-  (lambda (l)
-    (lambda (k)
-      (/ 1 (length l)))))
-
-; Recibe: l = Una lista de valores todos con la misma probabilidad de ser escogidos.
 ; Retorna: Una función λ que retorne de manera uniforme alguno de los valores de la lista.
 ; Ejemplo: (uniforme-disc '(2 4 6 8)) => #<procedure:lambda>.
 (define uniforme-disc
   (lambda (l)
     (lambda ()
-      (buscar-en-tabla (random) (acumulada (generar-tabla-con-lista l (uniforme-disc-aux l)))))))
+      (list-ref l (random (length l))))))
+
+; *** Uniforme Continua ***
+
+(define uniforme
+  (lambda (ini fin)
+    (lambda ()
+      (+ ini (random (- fin ini)) (random)))))
 
 ; *** Distrubución Geométrica ***
 
@@ -133,12 +133,35 @@
     (lambda (k)
       (/ (* (expt m k) (exp (* m -1))) (factorial k)))))
 
-(define data-sender
+(define exponencial
+  (lambda (u)
+    (lambda (k)
+      (cond
+        ((>= k 0) (* (/ 1 u) (exp (* (- (/ 1 u) k)))))
+        (else 0)))))
+
+(define normal
+  (lambda (m s)
+    (lambda (k)
+      (* 
+       (/ 1 (* s (sqrt (* 2 pi))))
+       (exp (* -1/2 (cuad (/ (- x m) s))))))))
+
+(define normal-estandar (normal 0 1))
+
+(define data-sender-disc
   (lambda (i n table out)
     (cond ((< i n) 
            (display (buscar-en-tabla (random) table) out)
            (display "\n" out)
-           (data-sender (+ i 1) n table out)))))
+           (data-sender-disc (+ i 1) n table out)))))
+
+(define data-sender-uniform
+  (lambda (i n func out)
+    (cond ((< i n) 
+           (display (func) out)
+           (display "\n" out)
+           (data-sender-uniform (+ i 1) n func out)))))
 
 (define disc-handler
   (lambda (args out)
@@ -147,7 +170,7 @@
     (display "\n" out)
     (display (last (list-ref args 2)) out)
     (display "\n" out)
-    (data-sender 0 (first args) (acumulada (generar-tabla-con-rango (list-ref args 2) (eval (last args)))) out)))
+    (data-sender-disc 0 (first args) (acumulada (generar-tabla-con-rango (list-ref args 2) (eval (last args)))) out)))
 
 (define cont-handler
   (lambda (args out)
@@ -155,7 +178,8 @@
 
 (define uniform-handler
   (lambda (args out)
-    (random)))
+    (display "2\n0\n0\n" out)
+    (data-sender-uniform 0 (first args) (eval (last args)) out)))
 
 (define function-controler
   (lambda (args)

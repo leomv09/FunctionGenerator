@@ -1,0 +1,6 @@
+;; Cantidad de valores a generar
+500000
+;; Tipo de funcion
+uniforme
+;; Denicion de la nueva funcion
+(uniforme 0 1)

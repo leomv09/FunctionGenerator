@@ -28,18 +28,10 @@ public class GraphData {
      * Establece el inicio del rango del gráfico.
      * 
      * @param ini El inicio del rango.
-     * @throws java.lang.Exception Si el inicio del rango no es un número positivo.
      */
     public void setIniRange(int ini) throws Exception
     {
-        if (ini >= 0)
-        {
-            this.ini_range = ini;
-        }
-        else
-        {
-            throw new Exception("El inicio del rango debe ser positivo.");
-        }
+        this.ini_range = ini;
     }
     
     /**
@@ -76,13 +68,13 @@ public class GraphData {
      */
     public void setFunctionType(int type) throws Exception
     {
-        if (type == 0 || type == 1)
+        if (type == 0 || type == 1 || type == 2)
         {
             this.functionType = type;
         }
         else
         {
-            throw new Exception("La funcion debe ser 0 = Discreta o 1 = Continua.");
+            throw new Exception("La funcion debe ser 0 = Discreta o 1 = Continua o 2 = Uniforme.");
         }
     }
     

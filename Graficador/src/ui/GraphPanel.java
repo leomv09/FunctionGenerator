@@ -1,7 +1,9 @@
 package ui;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import logic.GraphData;
+import logic.Utilities;
 
 public class GraphPanel extends javax.swing.JPanel {
 
@@ -16,9 +18,27 @@ public class GraphPanel extends javax.swing.JPanel {
         return this.data;
     }
     
+    
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        int[] values = this.data.getValues();
+        
+        if (values.length > 0)
+        {
+            int width = this.getWidth();
+            int rectWidth = width/values.length;
+            double height = (double) this.getHeight();
+            double rectHeight = height / Utilities.getMaxFromArray(values);
+            
+            for (int i = 0; i < values.length; i++)
+            {
+                g.setColor(Color.BLACK);
+                g.fillRect(i*rectWidth, (int) (height - values[i]*rectHeight), rectWidth, (int) (values[i]*rectHeight) );
+                g.setColor(Color.WHITE);
+                g.drawRect(i*rectWidth, (int) (height - values[i]*rectHeight), rectWidth, (int) (values[i]*rectHeight) );
+            }
+        }
     }
     
     /**

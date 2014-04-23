@@ -1,0 +1,8 @@
+;; Cantidad de valores a generar
+10000
+;; Tipo de funcion
+discreta
+;; Rango
+(0 20)
+;; Defnicion de la funcion
+(binomial 20 0.23)

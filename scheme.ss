@@ -6,28 +6,6 @@
           ((eof-object? next-object) (begin (close-input-port port) '()))
           (else (cons next-object (funct (read port)))))))))
 
-; Recibe: f = Una función para aplicarle a cada elemento entre [k, n[
-;         k = Inicio de la suma (Incluyente).
-;         n = Final de la suma (Excluyente).
-; Retorna: La suma de la función f evaluada en cada elemento de [k, n[
-; Ejemplo: (suma abs 0 5) => 10.
-(define suma
-  (lambda (f k n)
-    (cond
-      ((>= k n) 0)
-      (else (+ (f k) (suma f (+ k 1) n))))))
- 
-; Recibe: f = Función a integrar.
-;         a = Límite inferior de la integral.
-;         b = Límite superior de la integral.
-;         steps = Número de diviciones a realizar, entre más diviciones más precisión.
-; Retorna: La integral desde a hasta b de f(x)dx.
-; Ejemplo: (integral sin 0 1 1000) => 0.4596976941318605.
-(define integral
-  (lambda (f a b steps)
-    (define h (/ (- b a) steps))
-    (* (/ h 6) (suma (lambda(x) (+ (f (+ a (* h x))) (f (+ a (* h x) h)) (* 4 (f (+ a (* h x) (/ h 2)))))) 0 steps))))
-
 ;Función que calcula el factorial de un número dado.
 ;Recibe: n = Número al que se quiere saber el factorial.
 ;Retorna: El factorial del número ingresado.
@@ -66,12 +44,12 @@
 ;         fin = Final del rango.
 ;         fun = Una función para aplicarle a cada numero en [ini, fin].
 ; Retorna: Una lista que contiene un par de tipo (x (fun x)) donde x es cada elemento del rango.
-; Ejemplo: (generar-tabla-con-rango 0 3 (lambda (n) (* n 2))) => '((0 0) (1 2) (2 4) (3 6)).
+; Ejemplo: (generar-tabla-con-rango '(0 3) (lambda (n) (* n 2))) => '((0 0) (1 2) (2 4) (3 6)).
 (define generar-tabla-con-rango
-  (lambda (ini fin fun)
+  (lambda (rango fun)
     (cond
-      ((> ini fin) '())
-      (else (append (list (list ini (fun ini))) (generar-tabla-con-rango (+ ini 1) fin fun))))))
+      ((> (first rango) (last rango)) '())
+      (else (append (list (list (first rango) (fun (first rango)))) (generar-tabla-con-rango (list (+ (first rango) 1) (last rango)) fun))))))
 
 ; Recibe: l = Una lista de valores.
 ;         fun = Una función para aplicarle a cada elemento de la lista.
@@ -95,20 +73,12 @@
 ;Recibe: n = El tamaño de la cantidad de experimentos.
 ;        p = Probabilidad de éxito.
 ;Retorna: Una función λ que dado un valor [0,1[ devuelva un valor x que siga una distribución binomial.
-;Ejemplo: (binomial-aux 0.3)
-(define binomial-aux
+;Ejemplo: (binomial 15 0.3)
+(define binomial
   (lambda (n p)
     (lambda (k)
       (* (combinacion n k) (expt p k) (expt (- 1 p) (- n k))))))
 
-;Recibe: n = El tamaño de la cantidad de experimentos.
-;        p = Probabilidad de éxito.
-;Retorna: Una función λ que dado un valor [0,1[ devuelva un valor x que siga una distribución binomial.
-;Ejemplo: (binomial 100 0.3)
-(define binomial
-  (lambda (n p)
-    (lambda (k)
-      (buscar-en-tabla k (acumulada (generar-tabla-con-rango 0 n (binomial-aux n p)))))))
 
 ; *** Distribución Hipergeaométrica ***
 
@@ -116,21 +86,11 @@
 ;         d = Cantidad de los “exitosos”.
 ;         n = Muestra seleccionada.
 ; Retorna: Una función λ que dado un valor [max{0, n-(N-d)}, min{n, b}] devuelva la probabilidad de ser escogido.
-; Ejemplo: (hipergeometrica-aux 100 15 30) => #<procedure:lambda>.
-(define hipergeometrica-aux
-  (lambda (N d n)
-    (lambda (k)
-      (/ (* (combinacion d k) (combinacion (- N d) (- n k))) (combinacion N n)))))
-
-; Recibe: N = Tamaño de la población.
-;         d = Cantidad de los “exitosos”.
-;         n = Muestra seleccionada.
-; Retorna: Una función λ que dado un valor [0,1[ devuelva un valor x que siga una distribución hipergeométrica.
 ; Ejemplo: (hipergeometrica 100 15 30) => #<procedure:lambda>.
 (define hipergeometrica
   (lambda (N d n)
     (lambda (k)
-      (buscar-en-tabla k (acumulada (generar-tabla-con-rango (max 0 (- n (- N d))) (min d n) (hipergeometrica-aux N d n)))))))
+      (/ (* (combinacion d k) (combinacion (- N d) (- n k))) (combinacion N n)))))
 
 ; *** Distribución Uniforme Discreta ***
 
@@ -157,67 +117,55 @@
 ;        n = Rango para la función acumulada.
 ;Retorna: Una función λ que dado un valor k retorne la probabilidad de distribución.
 ;Ejemplo: (geometrica 0.3) => #<procedure:lambda>.
-(define geometrica-aux
+(define geometrica
   (lambda (n p)
     (lambda (k)
       (* (expt (- 1 p) k) p))))
-      
-;Recibe: p = Una probabilidad de exito p con 0 <= p <= 1.
-;        n = Rango para la función acumulada.
-;Retorna: Una función λ que para un valor [0,1[ retorne un x geométrico.
-;Ejemplo: (geometrica 14 0.3) => #<procedure:lambda>.
-(define geometrica
-  (lambda (n p)
-    (cond ((and (>= p 0) (<= p 1)) 
-           (lambda (k)
-      (buscar-en-tabla k (acumulada (generar-tabla-con-rango 0 n (geometrica-aux n p))))))
-          (else
-           (display "La probabilidad de éxito debe estar entre 0 y 1. Valor ingresado: ") (display p)))))
 
-;Cálculo de número euler.
-
-;Se utiliza la serie geométrica con X = 1, esto sería euler elevado a 1.
-; Recibe: k = Inicio de la suma (Incluyente).
-;         n = Final de la suma (Excluyente).
-; Retorna: El número euler con la con una aproximidad de n-1 ciclos.
-(define euler
-  (lambda (k n)
-    (cond
-      ((>= k n) 0)
-      (else (+ (/ 1 (factorial k)) (euler (+ k 1) n))))))  
 
 ; *** Distribución de Poisson ***
 
-
-;Recibe: n = Rango para la función acumulada.
-;        m = Valor de la media (λ).
+;Recibe: m = Valor de la media (λ).
 ;Retorna: Una función λ que dado un valor k retorne la probabilidad de distribución.
-;Ejemplo: (poisson-aux 0.6742) => #<procedure:lambda>.
-(define poisson-aux
-  (lambda (n m)
-    (lambda (k)
-      (/ (* (expt m k) (expt (euler 0 300) (* m -1))) (factorial k)))))
-
-;Recibe: n = Rango para la función acumulada.
-;        m = Valor de la media (λ).
-;Retorna: Una función λ que para un valor [0,1[ retorne un x de poisson.
-;Ejemplo: (poisson 10 3) => #<procedure:lambda>.
+;Ejemplo: (poisson 3) => #<procedure:lambda>.
 (define poisson
-  (lambda (n m)
+  (lambda (m)
     (lambda (k)
-      (buscar-en-tabla k (acumulada (generar-tabla-con-rango 0 n (poisson-aux n m)))))))
-         
-         
-         
-         
-         
-         
-         
-         
-         
-         
-         
-         
-         
-         
-         
+      (/ (* (expt m k) (exp (* m -1))) (factorial k)))))
+
+(define data-sender
+  (lambda (i n table out)
+    (cond ((< i n) 
+           (display (buscar-en-tabla (random) table) out)
+           (display "\n" out)
+           (data-sender (+ i 1) n table out)))))
+
+(define disc-handler
+  (lambda (args out)
+    (display "0\n" out)
+    (display (first (list-ref args 2)) out)
+    (display "\n" out)
+    (display (last (list-ref args 2)) out)
+    (display "\n" out)
+    (data-sender 0 (first args) (acumulada (generar-tabla-con-rango (list-ref args 2) (eval (last args)))) out)))
+
+(define cont-handler
+  (lambda (args out)
+    (random)))
+
+(define uniform-handler
+  (lambda (args out)
+    (random)))
+
+(define function-controler
+  (lambda (args)
+    (let-values ([(in out) (tcp-connect "localhost" 2020)])
+      (case(list-ref args 1)
+        ('discreta (disc-handler args out))
+        ('continua (cont-handler args out))
+        ('uniforme (uniform-handler args out)))
+      (close-output-port out))))
+
+(define control-handler 
+  (lambda (path)
+    (function-controler (read-file path))))

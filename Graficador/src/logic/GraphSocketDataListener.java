@@ -22,7 +22,6 @@ public class GraphSocketDataListener implements NewDataRecievedListener
     
     @Override
     public void handleEvent(NewDataRecievedEvent e) {
-        System.out.println("Data count: " + this.dataRecievedCount + " Data: " + e.getData());
         try
         {
             int input = Integer.valueOf( e.getData() );

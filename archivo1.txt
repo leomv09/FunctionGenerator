@@ -4,5 +4,5 @@
 discreta
 ;; Rango
 (0 20)
-;; Defnicion de la funcion
+;; Definicion de la funcion
 (binomial 20 0.23)

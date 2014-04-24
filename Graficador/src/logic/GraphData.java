@@ -91,6 +91,7 @@ public class GraphData {
         if (index >= 0)
         {
             this.values[index]++;
+            Thread.sleep(1);
         }
         else
         {

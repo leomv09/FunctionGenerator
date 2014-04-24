@@ -2,5 +2,5 @@
 500000
 ;; Tipo de funcion
 uniforme
-;; Denicion de la nueva funcion
-(uniforme 0 1)
+;; Definicion de la funcion
+(uniforme 0 1)

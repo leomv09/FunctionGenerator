@@ -1,12 +1,18 @@
-(define pi 3.14159265359)
+(define PI 3.14159265359)
+(define DISCRETA 0)
+(define CONTINUA 1)
+(define UNIFORME 2)
+
+(define read-objects
+  (lambda (in)
+    (let ([object (read in)])
+      (cond 
+        ((eof-object? object) '())
+        (else (cons object (read-objects in)))))))
 
 (define read-file
   (lambda (path)
-    (let ((port (open-input-file path)))
-      (let funct ((next-object (read port)))
-        (cond 
-          ((eof-object? next-object) (begin (close-input-port port) '()))
-          (else (cons next-object (funct (read port)))))))))
+    (read-objects (open-input-file path))))
 
 ; Recibe: n = Número al que se quiere saber el factorial.
 ; Retorna: El factorial del número ingresado.
@@ -120,7 +126,7 @@
   (lambda (m s)
     (lambda (k)
       (* 
-       (/ 1 (* s (sqrt (* 2 pi))))
+       (/ 1 (* s (sqrt (* 2 PI))))
        (exp (* -1/2 (cuad (/ (- k m) s))))))))
 
 (define normal-estandar (normal 0 1))
@@ -132,6 +138,13 @@
        (displayln (buscar-en-tabla (random) table) out)
        (send-data-discrete (+ i 1) n table out)))))
 
+(define send-data-continue
+  (lambda (i n func out)
+    (cond
+      ((< i n)
+       (displayln "Not implemented.")
+       (send-data-continue (+ i 1) n func out)))))
+
 (define send-data-uniform
   (lambda (i n func out)
     (cond 
@@ -139,42 +152,43 @@
        (displayln (func) out)
        (send-data-uniform (+ i 1) n func out)))))
 
-(define discrete-handler
+(define handle-discrete
   (lambda (args out)
-    (displayln 0 out)
-    (displayln (first (list-ref args 2)) out)
-    (displayln (last (list-ref args 2)) out)
-    (send-data-discrete 0 (first args) (acumulada (generar-tabla (list-ref args 2) (eval (last args)))) out)))
+    (displayln DISCRETA out)
+    (displayln (first (third args)) out)
+    (displayln (last (third args)) out)
+    (send-data-discrete 0 (first args) (acumulada (generar-tabla (third args) (eval (last args)))) out)))
 
-(define continue-handler
+(define handle-continue
   (lambda (args out)
-    (displayln 1 out)
-    (displayln (first (list-ref args 2)) out)
-    (displayln (last (list-ref args 2)) out)))
+    (displayln CONTINUA out)
+    (displayln (first (third args)) out)
+    (displayln (last (third args)) out)
+    (send-data-continue 0 (first args) (eval (last args)) out)))
 
-(define uniform-handler
+(define handle-uniform
   (lambda (args out)
-    (displayln 2 out)
+    (displayln UNIFORME out)
     (displayln 0 out)
     (displayln 0 out)
     (send-data-uniform 0 (first args) (eval (last args)) out)))
 
 (define function-switch
   (lambda (args out)
-    (case (list-ref args 1)
-      ('discreta (discrete-handler args out))
-      ('continua (continue-handler args out))
-      ('uniforme (uniform-handler args out)))))
+    (case (second args)
+      ('discreta (handle-discrete args out))
+      ('continua (handle-continue args out))
+      ('uniforme (handle-uniform args out)))))
 
 (define start 
   (lambda (path host port)
-    (with-handlers
-      ([exn:fail:network? (lambda (e) (displayln "Failed To Connect To Socket."))]
-       [exn:fail:filesystem? (lambda (e) (displayln "Failed To Open File."))])
+    (with-handlers 
+        ([exn:fail:network? (lambda (e) (displayln "Failed To Connect To Socket."))]
+         [exn:fail:filesystem? (lambda (e) (displayln "Failed To Open File."))])
       (let-values ([(in out) (tcp-connect host port)])
         (function-switch (read-file path) out)
         (close-output-port out)))))
 
-(display "Starting Program.\n")
+(displayln "Starting Scheme Program.")
 (start "archivo1.txt" "localhost" 2020)
-(display "Finish.\n")
+(displayln "Finish Scheme Program.")

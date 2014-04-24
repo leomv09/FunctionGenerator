@@ -1,0 +1,10 @@
+;; Cantidad de valores a generar
+150000
+;; Tipo funcion
+continua
+;; Rango
+(0 1 0.1)
+;; Definicion de la nueva funcion
+(lambda (x)
+(cond ((< 0.5 ((uniforme 0 1) x)) (* 2 x))
+(else (+ 1 x))))

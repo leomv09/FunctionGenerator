@@ -45,12 +45,12 @@
 ; Recibe: rango = Rango de la tabla a generar.
 ;         fun = Una función para aplicarle a cada numero en el rango.
 ; Retorna: Una lista que contiene un par de tipo (x (fun x)) donde x es cada elemento del rango.
-; Ejemplo: (generar-tabla-con-rango '(0 3) (lambda (n) (* n 2))) => '((0 0) (1 2) (2 4) (3 6)).
-(define generar-tabla-con-rango
+; Ejemplo: (generar-tabla '(0 3) (lambda (n) (* n 2))) => '((0 0) (1 2) (2 4) (3 6)).
+(define generar-tabla
   (lambda (rango fun)
     (cond
       ((> (first rango) (last rango)) '())
-      (else (append (list (list (first rango) (fun (first rango)))) (generar-tabla-con-rango (list (+ (first rango) 1) (last rango)) fun))))))
+      (else (append (list (list (first rango) (fun (first rango)))) (generar-tabla (list (+ (first rango) 1) (last rango)) fun))))))
 
 ; Recibe: l = Una lista de listas con el siguiente formato: '((x1 Px1)(x2 Px2)....(xn Pxn)).
 ;            Donde xn es el número y Pxn es la probabilidad del número.
@@ -125,11 +125,6 @@
 
 (define normal-estandar (normal 0 1))
 
-(define displayln
-  (lambda (data out)
-    (display data out)
-    (display "\n" out)))
-
 (define send-data-discrete
   (lambda (i n table out)
     (cond 
@@ -149,7 +144,7 @@
     (displayln 0 out)
     (displayln (first (list-ref args 2)) out)
     (displayln (last (list-ref args 2)) out)
-    (send-data-discrete 0 (first args) (acumulada (generar-tabla-con-rango (list-ref args 2) (eval (last args)))) out)))
+    (send-data-discrete 0 (first args) (acumulada (generar-tabla (list-ref args 2) (eval (last args)))) out)))
 
 (define continue-handler
   (lambda (args out)
@@ -173,10 +168,13 @@
 
 (define start 
   (lambda (path host port)
-    (let-values ([(in out) (tcp-connect host port)])
-      (function-switch (read-file path) out)
-      (close-output-port out))))
+    (with-handlers
+      ([exn:fail:network? (lambda (e) (displayln "Failed To Connect To Socket."))]
+       [exn:fail:filesystem? (lambda (e) (displayln "Failed To Open File."))])
+      (let-values ([(in out) (tcp-connect host port)])
+        (function-switch (read-file path) out)
+        (close-output-port out)))))
 
-(display "Start Sending Data.\n")
+(display "Starting Program.\n")
 (start "archivo1.txt" "localhost" 2020)
-(display "Ready.\n")
+(display "Finish.\n")

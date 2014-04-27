@@ -1,4 +1,4 @@
-package logic;
+package com.distgraph.net;
 
 /**
  * Interfaz que proporciona la comunicación entre listeners y eventos disparados por el Socket.

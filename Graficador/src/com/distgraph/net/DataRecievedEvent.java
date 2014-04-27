@@ -1,4 +1,4 @@
-package logic;
+package com.distgraph.net;
 
 import java.util.EventObject;
 

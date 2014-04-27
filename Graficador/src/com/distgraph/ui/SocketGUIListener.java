@@ -1,9 +1,9 @@
-package ui;
+package com.distgraph.ui;
 
-import logic.ClientConnectedEvent;
-import logic.DataRecievedEvent;
-import logic.SocketListener;
-import logic.Utilities;
+import com.distgraph.net.ClientConnectedEvent;
+import com.distgraph.net.DataRecievedEvent;
+import com.distgraph.net.SocketListener;
+import com.distgraph.util.Utilities;
 
 /**
  * La clase SocketGUIListener actualiza la interfaz gráfica con los datos que lleguen del Socket.

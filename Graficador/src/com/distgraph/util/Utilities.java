@@ -1,4 +1,4 @@
-package logic;
+package com.distgraph.util;
 
 /**
  * Clase que provee ciertas funciones útiles para el sistema.

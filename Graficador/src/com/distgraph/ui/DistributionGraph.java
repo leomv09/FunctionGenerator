@@ -1,6 +1,6 @@
-package ui;
+package com.distgraph.ui;
 
-import logic.Socket;
+import com.distgraph.net.Socket;
 
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;

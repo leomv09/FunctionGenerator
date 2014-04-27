@@ -1,7 +1,4 @@
 (define PI 3.14159265359)
-(define DISCRETA 0)
-(define CONTINUA 1)
-(define UNIFORME 2)
 
 (define read-objects
   (lambda (in)
@@ -143,7 +140,7 @@
     (cond
       ((< i n)
        (displayln "Not implemented.")
-       (send-data-continue (+ i 1) n func out)))))
+       (send-data-continue n n func out)))))
 
 (define send-data-uniform
   (lambda (i n func out)
@@ -154,23 +151,14 @@
 
 (define handle-discrete
   (lambda (args out)
-    (displayln DISCRETA out)
-    (displayln (first (third args)) out)
-    (displayln (last (third args)) out)
     (send-data-discrete 0 (first args) (acumulada (generar-tabla (third args) (eval (last args)))) out)))
 
 (define handle-continue
   (lambda (args out)
-    (displayln CONTINUA out)
-    (displayln (first (third args)) out)
-    (displayln (last (third args)) out)
     (send-data-continue 0 (first args) (eval (last args)) out)))
 
 (define handle-uniform
   (lambda (args out)
-    (displayln UNIFORME out)
-    (displayln 0 out)
-    (displayln 0 out)
     (send-data-uniform 0 (first args) (eval (last args)) out)))
 
 (define function-switch
@@ -182,13 +170,11 @@
 
 (define start 
   (lambda (path host port)
-    (with-handlers 
+    (with-handlers
         ([exn:fail:network? (lambda (e) (displayln "Failed To Connect To Socket."))]
          [exn:fail:filesystem? (lambda (e) (displayln "Failed To Open File."))])
       (let-values ([(in out) (tcp-connect host port)])
         (function-switch (read-file path) out)
         (close-output-port out)))))
 
-(displayln "Starting Scheme Program.")
 (start "archivo1.txt" "localhost" 2020)
-(displayln "Finish Scheme Program.")

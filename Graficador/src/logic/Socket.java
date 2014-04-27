@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,21 +13,21 @@ import java.util.List;
  * La clase GraphSocket proporciona un método para obtener datos provenientes de una conexión en red
  * por medio de Sockets.
  */
-public class GraphSocket extends Thread {
+public class Socket extends Thread {
     
-    private List<NewDataRecievedListener> listeners;
+    private final List<SocketListener> listeners;
     private ServerSocket server;
-    private Socket client;
+    private java.net.Socket client;
     private BufferedReader in;
     private BufferedWriter out;
-    private int port;
+    private final int port;
     
     /**
      * Crea un nuevo objeto de tipo GraphSocket.
      * 
      * @param port El puerto en que se va recibir la información.
      */
-    public GraphSocket(int port)
+    public Socket(int port)
     {
         this.listeners = new LinkedList<>();
         this.port = port;
@@ -43,7 +42,7 @@ public class GraphSocket extends Thread {
      * 
      * @param listener El nuevo listener.
      */
-    public synchronized void addEventListener(NewDataRecievedListener listener)
+    public synchronized void addEventListener(SocketListener listener)
     {
         listeners.add(listener);
     }
@@ -53,7 +52,7 @@ public class GraphSocket extends Thread {
      * 
      * @param listener El listener a eliminar.
      */
-    public synchronized void removeEventListener(NewDataRecievedListener listener)
+    public synchronized void removeEventListener(SocketListener listener)
     {
         listeners.remove(listener);
     }
@@ -63,13 +62,13 @@ public class GraphSocket extends Thread {
      * 
      * @param data El último dato que llegó.
      */
-    private synchronized void fireEvent(String data) 
+    private synchronized void fireNewDataRecievedEvent(String data) 
     {
       NewDataRecievedEvent event = new NewDataRecievedEvent(this, data);
       
-      for (NewDataRecievedListener l : this.listeners)
+      for (SocketListener l : this.listeners)
       {
-          l.handleEvent(event);
+          l.handleNewDataRecieved(event);
       }
     }
     
@@ -115,7 +114,7 @@ public class GraphSocket extends Thread {
 
             while ((input = this.in.readLine()) != null)
             {
-               this.fireEvent(input);
+               this.fireNewDataRecievedEvent(input);
             }
             
             this.close();
@@ -129,7 +128,7 @@ public class GraphSocket extends Thread {
     @Override
     public String toString()
     {
-        return "[" + "GraphSocketClient localhost::" + this.port + "]";
+        return "[" + "Socket localhost::" + this.port + "]";
     }
     
 }

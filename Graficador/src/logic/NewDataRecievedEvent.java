@@ -8,7 +8,7 @@ import java.util.EventObject;
  */
 public class NewDataRecievedEvent extends EventObject {
 
-    private String data;
+    private final String data;
     
     /**
      * Crea un nuevo objeto NewDataRecievedEvent.
@@ -16,7 +16,8 @@ public class NewDataRecievedEvent extends EventObject {
      * @param source Clase que disparó el evento.
      * @param data Nuevo dato.
      */
-    public NewDataRecievedEvent(Object source, String data) {
+    public NewDataRecievedEvent(Object source, String data)
+    {
         super(source);
         this.data = data;
     }
@@ -26,7 +27,8 @@ public class NewDataRecievedEvent extends EventObject {
      * 
      * @return El dato último dato que llegó.
      */
-    public String getData() {
+    public String getData()
+    {
         return this.data;
     }
 }

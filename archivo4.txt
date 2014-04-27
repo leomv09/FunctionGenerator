@@ -1,5 +1,5 @@
 ;; Cantidad de valores a generar
-150000
+50000
 ;; Tipo funcion
 continua
 ;; Rango

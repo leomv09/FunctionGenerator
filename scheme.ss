@@ -48,12 +48,12 @@
 ; Recibe: rango = Rango de la tabla a generar.
 ;         fun = Una función para aplicarle a cada numero en el rango.
 ; Retorna: Una lista que contiene un par de tipo (x (fun x)) donde x es cada elemento del rango.
-; Ejemplo: (generar-tabla '(0 3) (lambda (n) (* n 2))) => '((0 0) (1 2) (2 4) (3 6)).
-(define generar-tabla
+; Ejemplo: (generar-tabla-discreta '(0 3) (lambda (n) (* n 2))) => '((0 0) (1 2) (2 4) (3 6)).
+(define generar-tabla-discreta
   (lambda (rango fun)
     (cond
       ((> (first rango) (last rango)) '())
-      (else (append (list (list (first rango) (fun (first rango)))) (generar-tabla (list (+ (first rango) 1) (last rango)) fun))))))
+      (else (append (list (list (first rango) (fun (first rango)))) (generar-tabla-discreta (list (+ (first rango) 1) (last rango)) fun))))))
 
 ; Recibe: l = Una lista de listas con el siguiente formato: '((x1 Px1)(x2 Px2)....(xn Pxn)).
 ;            Donde xn es el número y Pxn es la probabilidad del número.
@@ -151,7 +151,7 @@
 
 (define handle-discrete
   (lambda (args out)
-    (send-data-discrete 0 (first args) (acumulada (generar-tabla (third args) (eval (last args)))) out)))
+    (send-data-discrete 0 (first args) (acumulada (generar-tabla-discreta (third args) (eval (last args)))) out)))
 
 (define handle-continue
   (lambda (args out)

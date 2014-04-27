@@ -3,6 +3,8 @@ package ui;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 import logic.Socket;
 import org.jfree.chart.ChartFactory;
@@ -55,13 +57,20 @@ public class DistributionGraph extends JFrame {
     
     this.setTitle("Gráfico de Distribución");
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    this.setSize(700, 700);
+    this.setSize(650, 650);
     this.setLocationRelativeTo(null);
     this.setVisible(true);
     
     this.socket = new Socket(2020);
     this.socket.addEventListener(new SocketGUIListener(this));
-    this.socket.start();
+    
+    this.addWindowListener(new WindowAdapter() {
+        @Override
+        public void windowOpened(WindowEvent evt)
+        {
+            socket.start();
+        }
+    });
   }
           
           
@@ -73,7 +82,7 @@ public class DistributionGraph extends JFrame {
             "Gráfico de Distribución",
             "",
             "",
-            data,
+            this.data,
             PlotOrientation.VERTICAL,
             true,
             true,
@@ -90,14 +99,24 @@ public class DistributionGraph extends JFrame {
   private void createPanel()
   {
     this.panel = new ChartPanel(this.chart);
-    getContentPane().add(this.panel, BorderLayout.CENTER);
+    this.getContentPane().add(this.panel, BorderLayout.CENTER);
   }
   
   public void createNewSerie()
   {
       this.serie = new XYSeries("");
-      data.addSeries( this.serie );
+      this.data.addSeries( this.serie );
       this.plot.getRenderer().setSeriesStroke(this.data.getSeriesCount()-1, new BasicStroke(2));
+  }
+  
+  public void setSerieKey(Comparable key)
+  {
+      this.serie.setKey(key);
+  }
+  
+  public void setRange(double ini, double fin, double interval)
+  {
+      throw new UnsupportedOperationException("Not implemented");
   }
   
   public void incrementValue(double x)

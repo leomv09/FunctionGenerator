@@ -33,8 +33,8 @@ public class SocketGUIListener implements SocketListener
         {
             // Primer Dato: Nombre de la función.
             case 0:
-                String distributionName = this.clientConnectedCount + " " + e.getData().toUpperCase();
-                this.frame.setSerieKey(distributionName);
+                String distributionName = this.clientConnectedCount + ". " + e.getData().toUpperCase();
+                this.frame.renameSerie(distributionName);
                 break;
             // Segundo Dato: Rango en formato ini:fin:intervalo
             case 1:
@@ -70,5 +70,6 @@ public class SocketGUIListener implements SocketListener
     {
         this.clientConnectedCount++;
         this.dataRecievedCount = 0;
+        this.frame.createNewSerie();
     }
 }

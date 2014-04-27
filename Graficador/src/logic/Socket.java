@@ -10,20 +10,16 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * La clase GraphSocket proporciona un método para obtener datos provenientes de una conexión en red
+ * La clase Socket proporciona un método para obtener datos provenientes de una conexión en red
  * por medio de Sockets.
  */
 public class Socket extends Thread {
     
     private final List<SocketListener> listeners;
-    private ServerSocket server;
-    private java.net.Socket client;
-    private BufferedReader in;
-    private BufferedWriter out;
     private final int port;
     
     /**
-     * Crea un nuevo objeto de tipo GraphSocket.
+     * Crea un nuevo objeto de tipo Socket.
      * 
      * @param port El puerto en que se va recibir la información.
      */
@@ -31,10 +27,6 @@ public class Socket extends Thread {
     {
         this.listeners = new LinkedList<>();
         this.port = port;
-        this.server = null;
-        this.client = null;
-        this.in = null;
-        this.out = null;
     }
     
     /**
@@ -62,62 +54,66 @@ public class Socket extends Thread {
      * 
      * @param data El último dato que llegó.
      */
-    private synchronized void fireNewDataRecievedEvent(String data) 
+    private synchronized void fireDataRecievedEvent(String data) 
     {
-      NewDataRecievedEvent event = new NewDataRecievedEvent(this, data);
+      DataRecievedEvent event = new DataRecievedEvent(this, data);
       
       for (SocketListener l : this.listeners)
       {
-          l.handleNewDataRecieved(event);
+          l.handleDataRecieved(event);
       }
     }
     
     /**
-     * Abre los puertos del socket y inicia los flujos de lectura y escritura.
+     * Dispara un evento a todos los listener avisando que se conectó un nuevo cliente.
      * 
-     * @throws IOException Si no se pudo abrir correctamente un puerto.
+     * @param client El socket del nuevo cliente.
      */
-    private void connect() throws IOException
+    private synchronized void fireClientConnectedEvent(java.net.Socket client) 
     {
-        this.server = new ServerSocket(this.port);
-        this.client = this.server.accept();
-        this.in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-        this.out = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
-    }
-    
-    /**
-     * Cierra los flujos de lectura y escritura y los puertos del socket.
-     * 
-     * @throws IOException Si no se pudo cerrar correctamente un puerto o flujo.
-     */
-    private void close() throws IOException
-    {
-        this.out.close();
-        this.in.close();
-        this.client.close();
-        this.server.close();
+      ClientConnectedEvent event = new ClientConnectedEvent(this, client);
+      
+      for (SocketListener l : this.listeners)
+      {
+          l.handleClientConnected(event);
+      }
     }
     
     /**
      * Método principal que espera una conexión y luego recibe los datos.
-     * Se dispara un evento de tipo NewDataRecievedEvent a cada listener cada vez
-     * que una nueva línea de texto a sido leída.
-     * Cada texto enviado debe terminar en un salto de línea.
      */
     @Override
     public void run()
     {
+        ServerSocket server;
+        java.net.Socket client;
+        BufferedReader in;
+        BufferedWriter out;
+        
         try
         {
-            this.connect();
+            server = new ServerSocket(this.port);
+            System.out.println(this + " Start listening.");
             String input;
-
-            while ((input = this.in.readLine()) != null)
+            
+            while ((client = server.accept()) != null)
             {
-               this.fireNewDataRecievedEvent(input);
+                in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                out = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
+                this.fireClientConnectedEvent(client);
+                
+                while ((input = in.readLine()) != null)
+                {
+                   this.fireDataRecievedEvent(input);
+                }
+                
+                out.close();
+                in.close();
+                client.close();
             }
             
-            this.close();
+            server.close();
+            System.out.println(this + " Closed.");
         }
         catch(IOException e)
         {

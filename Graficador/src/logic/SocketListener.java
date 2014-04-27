@@ -10,6 +10,13 @@ public interface SocketListener {
      * 
      * @param e Evento a procesar.
      */
-    public void handleNewDataRecieved(NewDataRecievedEvent e);
+    public void handleDataRecieved(DataRecievedEvent e);
+    
+    /**
+     * Procesa la información cuando un nuevo cliente se conecta al socket.
+     * 
+     * @param e Evento a procesar.
+     */
+    public void handleClientConnected(ClientConnectedEvent e);
     
 }

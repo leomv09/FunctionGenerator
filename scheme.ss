@@ -116,7 +116,7 @@
   (lambda (u)
     (lambda (k)
       (cond
-        ((>= k 0) (* (/ 1 u) (exp (* (- (/ 1 u) k)))))
+        ((>= k 0) (* u (exp (* (* -1 u) k)))))
         (else 0)))))
 
 (define normal

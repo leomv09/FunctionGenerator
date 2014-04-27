@@ -100,7 +100,7 @@
 ;Retorna: Una función λ que dado un valor k retorne la probabilidad de ser escogido.
 ;Ejemplo: (geometrica 0.3).
 (define geometrica
-  (lambda (n p)
+  (lambda (p)
     (lambda (k)
       (* (expt (- 1 p) k) p))))
 
@@ -116,7 +116,7 @@
   (lambda (u)
     (lambda (k)
       (cond
-        ((>= k 0) (* u (exp (* (* -1 u) k)))))
+        ((>= k 0) (* u (exp (* (* -1 u) k))))
         (else 0)))))
 
 (define normal

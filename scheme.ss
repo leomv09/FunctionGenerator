@@ -42,6 +42,7 @@
 (define buscar-en-tabla
   (lambda (x l)
     (cond
+      ((null? l) +nan.0)
       ((<= x (cadar l)) (caar l))
       (else (buscar-en-tabla x (cdr l))))))
 

@@ -45,9 +45,7 @@ public class SocketGUIListener implements SocketListener
                 }
                 catch (NumberFormatException | ArrayIndexOutOfBoundsException ex) 
                 {
-                    System.out.println(ex.getMessage());
-                    System.out.println("Error: Invalid Range.");
-                    System.out.println(e.getData());
+                    System.out.println("Invalid Range: " + e.getData());
                 }
                 break;
             // Siguientes Datos: Números.
@@ -56,10 +54,6 @@ public class SocketGUIListener implements SocketListener
                 {
                     double x = Double.valueOf(e.getData());
                     this.frame.incrementValue(x);
-                }
-                catch (NullPointerException ex)
-                { 
-                    System.out.println("Error: Received NULL data.");
                 }
                 catch (NumberFormatException ex) { }
         }

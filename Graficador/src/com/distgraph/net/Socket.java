@@ -16,7 +16,17 @@ import java.util.List;
 public class Socket extends Thread {
     
     private final List<SocketListener> listeners;
-    private final int port;
+    private int port;
+    
+    /**
+     * Crea un nuevo objeto de tipo Socket.
+     */
+    public Socket()
+    {
+        super("Socket Thread");
+        this.listeners = new LinkedList<>();
+        this.port = 0;
+    }
     
     /**
      * Crea un nuevo objeto de tipo Socket.
@@ -25,6 +35,7 @@ public class Socket extends Thread {
      */
     public Socket(int port)
     {
+        super("Socket Thread");
         this.listeners = new LinkedList<>();
         this.port = port;
     }
@@ -78,9 +89,29 @@ public class Socket extends Thread {
           l.handleClientConnected(event);
       }
     }
+
+    /**
+     * Establece el puerto del socket.
+     * 
+     * @param port El nuevo puerto.
+     */
+    public void setPort(int port)
+    {
+        this.port = port;
+    }
+
+    /**
+     * Obtiene el puerto del socket.
+     * 
+     * @return El puerto.
+     */
+    public int getPort()
+    {
+        return this.port;
+    }
     
     /**
-     * Método principal que espera una conexión y luego recibe los datos.
+     * Método principal que espera conexiones y recibe los datos.
      */
     @Override
     public void run()
@@ -89,11 +120,11 @@ public class Socket extends Thread {
         java.net.Socket client;
         BufferedReader in;
         BufferedWriter out;
-        
+       
         try
         {
             server = new ServerSocket(this.port);
-            System.out.println(this + " Start listening.");
+            this.port = server.getLocalPort();
             String input;
             
             while ((client = server.accept()) != null)
@@ -112,10 +143,8 @@ public class Socket extends Thread {
                 client.close();
             }
             
-            server.close();
-            System.out.println(this + " Closed.");
         }
-        catch(IOException e)
+        catch (IOException e)
         {
            System.out.println(this + " Error: " + e.getMessage());
         }

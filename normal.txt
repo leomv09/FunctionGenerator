@@ -1,0 +1,8 @@
+;; Cantidad de valores a generar
+50000
+;; Tipo de funcion
+continua
+;; Rango
+(-100 100)
+;; Definicion de la funcion
+(normal-estandar)

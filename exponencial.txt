@@ -1,0 +1,8 @@
+;; Cantidad de valores a generar
+50000
+;; Tipo de funcion
+continua
+;; Rango
+(5 30)
+;; Definicion de la funcion
+(exponencial 20)

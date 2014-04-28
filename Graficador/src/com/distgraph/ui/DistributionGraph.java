@@ -65,14 +65,7 @@ public class DistributionGraph extends JFrame {
 
       this.socket = new Socket(2020);
       this.socket.addEventListener(new SocketGUIListener(this));
-
-      this.addWindowListener(new WindowAdapter() {
-          @Override
-          public void windowOpened(WindowEvent evt)
-          {
-              socket.start();
-          }
-      });
+      this.socket.start();
     }
   
     /**

@@ -100,7 +100,7 @@
 ;Retorna: Una función λ que dado un valor k retorne la probabilidad de ser escogido.
 ;Ejemplo: (geometrica 0.3).
 (define geometrica
-  (lambda (p)
+  (lambda (n p)
     (lambda (k)
       (* (expt (- 1 p) k) p))))
 
@@ -176,5 +176,24 @@
       (let-values ([(in out) (tcp-connect host port)])
         (function-switch (read-file path) out)
         (close-output-port out)))))
+
+(define simpson
+  (lambda (func a b)
+    (* (/ (/ 1000) 3) (simpson-aux func a b(* (- b a) 1000)))))
+
+(define simpson-aux
+  (lambda (func a b particiones)
+    (+ (func a) (func b) (suma-simpson func #f (+ a (/ (- b a) particiones)) b (/ (- b a) particiones) 0))))
+
+(define suma-simpson
+  (lambda (func es-par val-act tope aumento acum)
+    (cond ((>= val-act tope) acum)
+          (es-par
+           (suma-simpson
+            func (not es-par) (+ val-act aumento) tope aumento (+ (* 2 (func val-act)) acum)))
+           (else
+            (suma-simpson
+             func (not es-par) (+ val-act aumento) tope aumento (+ (* 4 (func val-act)) acum))))))
+            
 
 (start "archivo1.txt" "localhost" 2020)

@@ -14,6 +14,10 @@
 (define read-file
   (lambda (path)
     (read-objects (open-input-file path))))
+;
+(define get-formatted-range
+  (lambda (range)
+    (string-append (first range) ":" (second range) ":" (last range))))
 
 ; Recibe: n = Número natural.
 ; Retorna: El factorial del número ingresado.
@@ -104,6 +108,18 @@
     (cond
       ((> (first rango) (last rango)) '())
       (else (append (list (list (first rango) (fun (first rango)))) (generar-tabla-discreta (list (+ (first rango) 1) (last rango)) fun))))))
+
+
+(define generar-tabla-continua
+  (lambda (rango func)
+    (cond ((<= (first rango) (second rango))
+           (append (list (list (first rango) (func (- (first rango) (last rango)) (first rango)))) (generar-tabla-continua (list (+ (first rango) (last rango)) (second rango) (last rango)) func)))
+           (else '()))))
+            
+
+(define cuad
+  (lambda (n)
+    (* n n)))
 
 ; Recibe: l = Una lista de listas con el siguiente formato: '((x1 Px1)(x2 Px2)....(xn Pxn)).
 ;            Donde xn es el número y Pxn es la probabilidad del número.
@@ -229,6 +245,8 @@
 ;         out = Puerto de escritura.
 (define handle-discrete
   (lambda (args out)
+    (displayln (firts (last args)))
+    (displyln ((get-formatted-range (list (first (third args)) (last (third args)) 1))))
     (send-data-discrete 0 (first args) (acumulada (generar-tabla-discreta (third args) (eval (last args)))) out)))
 
 ; Función que se encarga de controlar las funciones continuas.
@@ -236,13 +254,18 @@
 ;         out = Puerto de escritura.
 (define handle-continue
   (lambda (args out)
+    (displayln (firts (last args)))
+    (displyln ((get-formatted-range (third args))))
     (send-data-continue 0 (first args) (eval (last args)) out)))
+    
 
 ; Función que se encarga de controlar las funciones uniformes.
 ; Recibe: args = Argumentos del programa.
 ;         out = Puerto de escritura.
 (define handle-uniform
   (lambda (args out)
+    (displayln (firts (last args)))
+    (displyln ((get-formatted-range (third args))))
     (send-data-uniform 0 (first args) (eval (last args)) out)))
 
 ; Función que define que tipo de función se quiere ejecutar.

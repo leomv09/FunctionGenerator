@@ -1,8 +1,8 @@
-;; Cantidad de valores a generar
+;; Cantidad de valores a generar.
 50000
-;; Tipo de funcion
+;; Tipo de función.
 continua
 ;; Rango
-(5 30)
-;; Definicion de la funcion
-(exponencial 20)
+(1 80 1)
+;; Definición de la función.
+(exponencial 1/20)

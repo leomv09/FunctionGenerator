@@ -1,8 +1,8 @@
-;; Cantidad de valores a generar
+;; Cantidad de valores a generar.
 50000
-;; Tipo de funcion
+;; Tipo de función.
 uniforme
-;; Rango
-(-5 1 0.1)
-;; Definicion de la funcion
-(uniforme -5 1)
+;; Rango.
+(-20 20 0.3)
+;; Definición de la función.
+(uniforme -20 20)

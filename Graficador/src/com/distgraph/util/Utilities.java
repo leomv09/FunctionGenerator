@@ -5,7 +5,6 @@ package com.distgraph.util;
  */
 public class Utilities 
 {
-
     /**
      * Realiza un split del String que le ingresa y convierte cada valor a double.
      * Ejemplo: splitAndCast("0:1:0.4", ":") => {0.0, 1.0, 0.4}

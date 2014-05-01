@@ -6,20 +6,20 @@ import com.distgraph.net.SocketListener;
 import com.distgraph.util.Utilities;
 
 /**
- * La clase SocketGUIListener actualiza la interfaz gráfica con los datos que lleguen del Socket.
+ * La clase UISocketHandler actualiza la interfaz gráfica con los datos que lleguen del Socket.
  */
-public class SocketGUIListener implements SocketListener 
+public class UISocketHandler implements SocketListener 
 {
     private final DistributionGraph frame;
     private int dataRecievedCount;
     private int clientConnectedCount;
     
     /**
-     * Crea un nuevo objeto SocketGUIListener.
+     * Crea un nuevo objeto UISocketHandler.
      * 
      * @param frame El objeto DistributionGraph que se desea actualizar.
      */
-    public SocketGUIListener(DistributionGraph frame)
+    public UISocketHandler(DistributionGraph frame)
     {
         this.frame = frame;
         this.dataRecievedCount = 0;

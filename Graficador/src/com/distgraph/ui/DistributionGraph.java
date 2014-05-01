@@ -52,18 +52,20 @@ public class DistributionGraph extends JFrame {
   
     /**
      * Crea un nuevo objeto de tipo DistributionGraph.
+     * 
+     * @param title Título de la ventana.
      */
-    public DistributionGraph()
+    public DistributionGraph(String title)
     {
-      this.initializeChart();
-
-      this.setTitle("Gráfico de Distribución");
+      this.setTitle(title);
       this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
       this.setSize(650, 650);
       this.setLocationRelativeTo(null);
 
       this.socket = new Socket();
-      this.socket.addEventListener(new SocketGUIListener(this));
+      this.socket.addEventListener(new UISocketHandler(this));
+      
+      this.initializeChart();
     }
   
     /**
@@ -74,7 +76,7 @@ public class DistributionGraph extends JFrame {
         this.data = new XYSeriesCollection();
 
         this.chart = ChartFactory.createXYLineChart(
-                "Gráfico de Distribución",
+                this.getTitle(),
                 "",
                 "",
                 this.data,
@@ -219,7 +221,7 @@ public class DistributionGraph extends JFrame {
      */
     public static void main(String[] args)
     {
-      DistributionGraph frame = new DistributionGraph();
+      DistributionGraph frame = new DistributionGraph("Gráfico de Distribución");
       frame.startListening(2020);
       frame.setVisible(true);
     }

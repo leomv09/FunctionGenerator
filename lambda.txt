@@ -1,10 +1,9 @@
-;; Cantidad de valores a generar
+;; Cantidad de valores a generar.
 50000
-;; Tipo funcion
+;; Tipo función.
 continua
-;; Rango
-(0 1 0.1)
-;; Definicion de la nueva funcion
+;; Rango.
+(-1 10 0.23)
+;; Definición de la nueva función. [Moyal μ=1 σ=0.5].
 (lambda (x)
-(cond ((< 0.5 ((uniforme 0 1) x)) (* 2 x))
-(else (+ 1 x))))
+  (/ (exp (- (- 1 x) (/ (exp (/ (- 1 x) 0.5)) 2))) (* (sqrt (* 2 PI)) 0.5)))

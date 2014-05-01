@@ -3,6 +3,6 @@
 ;; Tipo de función.
 continua
 ;; Rango.
-(-5 5 0.2)
+(-10 10 0.5)
 ;; Definición de la función.
-(normal 0 1)
+(normal 0 3)

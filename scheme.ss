@@ -14,10 +14,6 @@
 (define read-file
   (lambda (path)
     (read-objects (open-input-file path))))
-;
-(define get-formatted-range
-  (lambda (range)
-    (string-append (first range) ":" (second range) ":" (last range))))
 
 ; Recibe: n = Número natural.
 ; Retorna: El factorial del número ingresado.
@@ -27,6 +23,10 @@
     (cond
       ((= n 0) 1)
       (else (* n (factorial (- n 1)))))))
+
+(define cuad
+  (lambda (n)
+    (* n n)))
 
 ; Recibe: n = Cantidad de elementos de un conjunto.
 ;         k = Número de elementos a escoger.
@@ -109,17 +109,11 @@
       ((> (first rango) (last rango)) '())
       (else (append (list (list (first rango) (fun (first rango)))) (generar-tabla-discreta (list (+ (first rango) 1) (last rango)) fun))))))
 
-
 (define generar-tabla-continua
   (lambda (rango func)
     (cond ((<= (first rango) (second rango))
            (append (list (list (first rango) (func (- (first rango) (last rango)) (first rango)))) (generar-tabla-continua (list (+ (first rango) (last rango)) (second rango) (last rango)) func)))
            (else '()))))
-            
-
-(define cuad
-  (lambda (n)
-    (* n n)))
 
 ; Recibe: l = Una lista de listas con el siguiente formato: '((x1 Px1)(x2 Px2)....(xn Pxn)).
 ;            Donde xn es el número y Pxn es la probabilidad del número.
@@ -181,14 +175,14 @@
     (lambda ()
       (+ ini (random (- fin ini)) (random)))))
 
-; Recibe: m = Valor para su media.
+; Recibe: l = Valor para su lambda (1/μ).
 ; Retorna: Una función λ que dado un valor k retorne la probabilidad de ser escogido.
-; Ejemplo: (exponencial 3).
+; Ejemplo: (exponencial 1/20).
 (define exponencial
-  (lambda (m)
+  (lambda (l)
     (lambda (k)
       (cond
-        ((>= k 0) (* m (exp (* (* -1 m) k))))
+        ((>= k 0) (* l (exp (* (* -1 l) k))))
         (else 0)))))
 
 ; Recibe: m = Media.
@@ -201,8 +195,6 @@
       (* 
        (/ 1 (* s (sqrt (* 2 PI))))
        (exp (* -1/2 (cuad (/ (- k m) s))))))))
-
-(define normal-estandar (normal 0 1))
 
 ; Función que se encarga de eviar los datos al servidor de las funciones de tipo discreta.
 ; Recibe: i = Contador de datos enviados.
@@ -225,8 +217,8 @@
   (lambda (i n table out)
     (cond
       ((< i n)
-       (displayln "Not implemented.")
-       (send-data-continue n n table out)))))
+       (displayln (buscar-en-tabla (random) table) out)
+       (send-data-continue (+ i 1) n table out)))))
 
 ; Función que se encarga de eviar los datos al servidor de las funciones de tipo uniformes.
 ; Recibe: i = Contador de datos enviados.
@@ -240,13 +232,25 @@
        (displayln (func) out)
        (send-data-uniform (+ i 1) n func out)))))
 
+(define send-name
+  (lambda (args out)
+    (displayln (first (last args)) out)))
+
+(define send-range
+  (lambda (ini fin interval out)
+    (display ini out)
+    (display ":" out)
+    (display fin out)
+    (display ":" out)
+    (displayln interval out)))
+
 ; Función que se encarga de controlar las funciones discretas.
 ; Recibe: args = Argumentos del programa.
 ;         out = Puerto de escritura.
 (define handle-discrete
   (lambda (args out)
-    (displayln (firts (last args)))
-    (displyln ((get-formatted-range (list (first (third args)) (last (third args)) 1))))
+    (send-name args out)
+    (send-range (first (third args)) (second (third args)) 1 out)
     (send-data-discrete 0 (first args) (acumulada (generar-tabla-discreta (third args) (eval (last args)))) out)))
 
 ; Función que se encarga de controlar las funciones continuas.
@@ -254,18 +258,17 @@
 ;         out = Puerto de escritura.
 (define handle-continue
   (lambda (args out)
-    (displayln (firts (last args)))
-    (displyln ((get-formatted-range (third args))))
-    (send-data-continue 0 (first args) (eval (last args)) out)))
-    
+    (send-name args out)
+    (send-range (first (third args)) (second (third args)) (third (third args)) out)
+    (send-data-continue 0 (first args) (acumulada (generar-tabla-continua (third args) (lambda (ini fin) (simpson (eval (last args)) ini fin)))) out)))
 
 ; Función que se encarga de controlar las funciones uniformes.
 ; Recibe: args = Argumentos del programa.
 ;         out = Puerto de escritura.
 (define handle-uniform
   (lambda (args out)
-    (displayln (firts (last args)))
-    (displyln ((get-formatted-range (third args))))
+    (send-name args out)
+    (send-range (first (third args)) (second (third args)) (third (third args)) out)
     (send-data-uniform 0 (first args) (eval (last args)) out)))
 
 ; Función que define que tipo de función se quiere ejecutar.
@@ -291,4 +294,12 @@
         (function-switch (read-file path) out)
         (close-output-port out)))))
 
-(start "binomial.txt" "localhost" 2020)
+;(start "binomial.txt" "localhost" 2020)
+;(start "geometrica.txt" "localhost" 2020)
+;(start "hipergeometrica.txt" "localhost" 2020)
+;(start "poisson.txt" "localhost" 2020)
+;(start "uniforme-disc.txt" "localhost" 2020)
+;(start "uniforme.txt" "localhost" 2020)
+;(start "exponencial.txt" "localhost" 2020)
+;(start "normal.txt" "localhost" 2020)
+;(start "lambda.txt" "localhost" 2020)

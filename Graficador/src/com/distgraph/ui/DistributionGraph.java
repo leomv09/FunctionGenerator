@@ -1,13 +1,12 @@
 package com.distgraph.ui;
 
 import com.distgraph.net.Socket;
-
-import javax.swing.JFrame;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Stroke;
-
+import java.util.Random;
+import javax.swing.JFrame;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -129,10 +128,12 @@ public class DistributionGraph extends JFrame {
     
     /**
      * Agrega una nueva serie al gráfico.
+     * La serie es agregada con una llave aleatoria para provenir que hallan dos o más series con la misma llave.
      */
     public void createNewSerie()
     {
-        this.currentSerie = new XYSeries("");
+        Random r = new Random();
+        this.currentSerie = new XYSeries(r.nextDouble());
         this.data.addSeries( this.currentSerie );
     }
   

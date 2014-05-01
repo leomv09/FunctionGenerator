@@ -50,9 +50,9 @@ public class DistributionGraph extends JFrame {
   private final Socket socket;
   
   /**
-    * Rango de la serie actual.
+    * Indica si la serie actual posee un rango definido.
   */
-  private double range[];
+  private boolean haveRange;
   
     /**
      * Crea un nuevo objeto de tipo DistributionGraph.
@@ -69,7 +69,7 @@ public class DistributionGraph extends JFrame {
       this.socket = new Socket();
       this.socket.addEventListener(new UISocketHandler(this));
       
-      this.range = new double[20];
+      this.haveRange = false;
       this.initializeChart();
     }
   
@@ -158,10 +158,15 @@ public class DistributionGraph extends JFrame {
      */
     public void setRange(double ini, double fin, double interval)
     {
-        while(ini <= fin)
+        this.haveRange = ini != fin;
+        
+        if (this.haveRange)
         {
-            this.currentSerie.add(ini, 0);
-            ini += interval;
+            while (ini <= fin)
+            {
+                this.currentSerie.add(ini, 0);
+                ini += interval;
+            }   
         }
     }
   
@@ -199,15 +204,14 @@ public class DistributionGraph extends JFrame {
      */
     private int getIndexFromSerie(double x)
     {
-      String key = String.valueOf(this.currentSerie.getKey());
-
-      if (key.endsWith("UNIFORME-DISC"))
+      if (this.haveRange)
       {
-          return this.currentSerie.indexOf(x);
+          return getIndexFromIntervals(x);
+          
       }
       else
       {
-          return getIndexFromIntervals(x);
+          return this.currentSerie.indexOf(x);
       }
     }
 
@@ -223,17 +227,19 @@ public class DistributionGraph extends JFrame {
     private int getIndexFromIntervals(double x)
     {
         int i = 0;
+        int count = this.currentSerie.getItemCount();
         
-       while(i <= this.currentSerie.getItemCount())
-       {
-           if(this.currentSerie.getX(i).doubleValue() >= x)
+        while (i < count)
+        {
+           if (this.currentSerie.getX(i).doubleValue() >= x)
            {
                return i;
            }
            i++;
         }
-       return -1;   
-       }
+        
+        return -1;   
+    }
           
     /**
      * Comienza la ejecución del programa.

@@ -50,6 +50,11 @@ public class DistributionGraph extends JFrame {
   */
   private final Socket socket;
   
+  /**
+    * Rango de la serie actual.
+  */
+  private double range[];
+  
     /**
      * Crea un nuevo objeto de tipo DistributionGraph.
      * 
@@ -65,6 +70,7 @@ public class DistributionGraph extends JFrame {
       this.socket = new Socket();
       this.socket.addEventListener(new UISocketHandler(this));
       
+      this.range = new double[20];
       this.initializeChart();
     }
   
@@ -151,7 +157,14 @@ public class DistributionGraph extends JFrame {
      */
     public void setRange(double ini, double fin, double interval)
     {
-        throw new UnsupportedOperationException("Not implemented");
+        this.range = new double[((int) fin)+1];
+        int i = 0;
+        while(ini <= fin)
+        {
+            this.range[i] = ini;
+            ini += interval;
+            i++;
+        }
     }
   
     /**
@@ -211,7 +224,21 @@ public class DistributionGraph extends JFrame {
      */
     private int getIndexFromIntervals(double x)
     {
-      throw new UnsupportedOperationException("Not implemented");
+        int i = 0;
+        
+        while(i < this.range.length)
+        {
+            if(x < this.range[i])
+            {
+                break;
+            }
+            i++;
+        }
+        if(i > this.range.length)
+        {
+            return -1;
+        }
+        return (i+1);
     }
           
     /**

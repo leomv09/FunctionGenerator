@@ -160,7 +160,7 @@ public class DistributionGraph extends JFrame {
     {
         while(ini <= fin)
         {
-            this.currentSerie.add(ini, ini);
+            this.currentSerie.add(ini, 0);
             ini += interval;
         }
     }

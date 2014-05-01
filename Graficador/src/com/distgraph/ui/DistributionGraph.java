@@ -157,13 +157,10 @@ public class DistributionGraph extends JFrame {
      */
     public void setRange(double ini, double fin, double interval)
     {
-        this.range = new double[((int) fin)+1];
-        int i = 0;
         while(ini <= fin)
         {
-            this.range[i] = ini;
+            this.currentSerie.add(ini, ini);
             ini += interval;
-            i++;
         }
     }
   
@@ -226,20 +223,16 @@ public class DistributionGraph extends JFrame {
     {
         int i = 0;
         
-        while(i < this.range.length)
-        {
-            if(x < this.range[i])
-            {
-                break;
-            }
-            i++;
+       while(i <= this.currentSerie.getItemCount())
+       {
+           if(this.currentSerie.getX(i).doubleValue() >= x)
+           {
+               return i;
+           }
+           i++;
         }
-        if(i > this.range.length)
-        {
-            return -1;
-        }
-        return (i+1);
-    }
+       return -1;   
+       }
           
     /**
      * Comienza la ejecución del programa.

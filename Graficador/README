@@ -1,0 +1,5 @@
+Se debe contar con el programa 'ant' para compilar el proyecto.
+
+Para compilar: ant compile
+Para generar jar: ant jar
+Para ejecutar: ant run

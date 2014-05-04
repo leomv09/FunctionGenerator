@@ -5,7 +5,10 @@ import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Stroke;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Random;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -23,6 +26,12 @@ public class DistributionGraph extends JFrame {
     * 
   */
   private ChartPanel panel;
+  
+  /**
+    * Botón para limpiar el gáfico.
+    * 
+  */
+  private JButton clearButton;
   
   /**
     * Gráfico.
@@ -63,7 +72,7 @@ public class DistributionGraph extends JFrame {
     {
       this.setTitle(title);
       this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-      this.setSize(650, 650);
+      this.setSize(700, 700);
       this.setLocationRelativeTo(null);
 
       this.socket = new Socket();
@@ -103,12 +112,24 @@ public class DistributionGraph extends JFrame {
                 return new BasicStroke(1.5f);
             }
         };
-
+        
         renderer.setBaseShapesVisible(false);
         plot.setRenderer(renderer);
 
         this.panel = new ChartPanel(this.chart);
+        this.clearButton = new JButton("Borrar Datos");
+        this.clearButton.addActionListener(new ActionListener(){
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                data.removeAllSeries();
+            }
+            
+        });
+        
         this.getContentPane().add(this.panel, BorderLayout.CENTER);
+        this.getContentPane().add(this.clearButton, BorderLayout.SOUTH);
     }
 
     /**

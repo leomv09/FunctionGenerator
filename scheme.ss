@@ -24,6 +24,9 @@
       ((= n 0) 1)
       (else (* n (factorial (- n 1)))))))
 
+; Recibe: n = Número.
+; Retorna: El cuadrado de n.
+; Ejemplo: (cuad 3) => 9.
 (define cuad
   (lambda (n)
     (* n n)))
@@ -107,21 +110,16 @@
   (lambda (rango fun)
     (cond
       ((> (first rango) (last rango)) '())
-      (else (append (list (list (first rango) (fun (first rango)))) (generar-tabla-discreta (list (+ (first rango) 1) (last rango)) fun))))))
+      (else (cons (list (first rango) (fun (first rango))) (generar-tabla-discreta (list (+ (first rango) 1) (last rango)) fun))))))
 
+; Recibe: rango = Rango de la tabla a generar. (ini fin interval)
+;         fun = Una función para aplicarle a cada subintervalo del rango.
+; Retorna: Una tabla que contiene pares de tipo (x (fun x)) donde x es cada subintervalo del rango
 (define generar-tabla-continua
   (lambda (rango func)
-    (cond ((<= (first rango) (second rango))
-           (append (list (list (first rango) (func (- (first rango) (last rango)) (first rango)))) (generar-tabla-continua (list (+ (first rango) (last rango)) (second rango) (last rango)) func)))
-           (else '()))))
-
-; Recibe: l = Una lista de listas con el siguiente formato: '((x1 Px1)(x2 Px2)....(xn Pxn)).
-;            Donde xn es el número y Pxn es la probabilidad del número.
-; Retorna: Una función λ que dado un valor [0,1[ devuelva un valor xi que siga la distribución según la tabla.
-(define tabla
-  (lambda (l)
-    (lambda (k)
-      (buscar-en-tabla k (acumulada l)))))
+    (cond
+      ((> (first rango) (second rango)) '())
+      (else (cons (list (first rango) (func (- (first rango) (last rango)) (first rango))) (generar-tabla-continua (list (+ (first rango) (last rango)) (second rango) (last rango)) func))))))
 
 ; Recibe: n = La cantidad de experimentos.
 ;         p = La probabilidad de éxito.
@@ -196,29 +194,17 @@
        (/ 1 (* s (sqrt (* 2 PI))))
        (exp (* -1/2 (cuad (/ (- k m) s))))))))
 
-; Función que se encarga de eviar los datos al servidor de las funciones de tipo discreta.
+; Función que se encarga de eviar los datos al servidor de las funciones de tipo discreta o continua.
 ; Recibe: i = Contador de datos enviados.
 ;         n = Cantidad de datos a enviar.
 ;         table = Tabla acumulada de la distribución.
 ;         out = Puerto de escritura.
-(define send-data-discrete
+(define send-data
   (lambda (i n table out)
     (cond 
       ((< i n)
        (displayln (buscar-en-tabla (random) table) out)
-       (send-data-discrete (+ i 1) n table out)))))
-
-; Función que se encarga de eviar los datos al servidor de las funciones de tipo continuas.
-; Recibe: i = Contador de datos enviados.
-;         n = Cantidad de datos a enviar.
-;         table = Tabla acumulada de la distribución.
-;         out = Puerto de escritura.
-(define send-data-continue
-  (lambda (i n table out)
-    (cond
-      ((< i n)
-       (displayln (buscar-en-tabla (random) table) out)
-       (send-data-continue (+ i 1) n table out)))))
+       (send-data (+ i 1) n table out)))))
 
 ; Función que se encarga de eviar los datos al servidor de las funciones de tipo uniformes.
 ; Recibe: i = Contador de datos enviados.
@@ -232,10 +218,16 @@
        (displayln (func) out)
        (send-data-uniform (+ i 1) n func out)))))
 
+; Envia el nombre de la función actual al socket.
+; Recibe: args = Argumentos del programa.
+;         out = Puerto de escritura.
 (define send-name
   (lambda (args out)
     (displayln (first (last args)) out)))
 
+; Envia el rango al socket en formato ini:fin:interval.
+; Recibe: args = Argumentos del programa.
+;         out = Puerto de escritura.
 (define send-range
   (lambda (ini fin interval out)
     (display ini out)
@@ -251,7 +243,9 @@
   (lambda (args out)
     (send-name args out)
     (send-range (first (third args)) (second (third args)) 1 out)
-    (send-data-discrete 0 (first args) (acumulada (generar-tabla-discreta (third args) (eval (last args)))) out)))
+    (cond
+      ((eq? (first (last args)) 'tabla) (send-data 0 (first args) (acumulada (last (last args))) out))
+      (else (send-data 0 (first args) (acumulada (generar-tabla-discreta (third args) (eval (last args)))) out)))))
 
 ; Función que se encarga de controlar las funciones continuas.
 ; Recibe: args = Argumentos del programa.
@@ -260,7 +254,7 @@
   (lambda (args out)
     (send-name args out)
     (send-range (first (third args)) (second (third args)) (third (third args)) out)
-    (send-data-continue 0 (first args) (acumulada (generar-tabla-continua (third args) (lambda (ini fin) (simpson (eval (last args)) ini fin)))) out)))
+    (send-data 0 (first args) (acumulada (generar-tabla-continua (third args) (lambda (ini fin) (simpson (eval (last args)) ini fin)))) out)))
 
 ; Función que se encarga de controlar las funciones uniformes.
 ; Recibe: args = Argumentos del programa.
@@ -294,6 +288,7 @@
         (function-switch (read-file path) out)
         (close-output-port out)))))
 
+;(start "files/tabla.txt" "localhost" 2020)
 ;(start "files/binomial.txt" "localhost" 2020)
 ;(start "files/geometrica.txt" "localhost" 2020)
 ;(start "files/hipergeometrica.txt" "localhost" 2020)

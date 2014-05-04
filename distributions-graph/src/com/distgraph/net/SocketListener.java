@@ -1,7 +1,17 @@
+/*
+ Instituto Tecnológico de Costa Rica.
+ IC-4700 Lenguajes de Programación.
+ II Proyecto Programado.
+ Integrantes:
+    José Andrés García Sáenz <jags9415@gmail.com>.
+    Leonardo Madrigal Valverde <lmadrigal09@gmail.com>.
+ I Semestre 2014.
+*/
+
 package com.distgraph.net;
 
 /**
- * Interfaz que proporciona la comunicación entre listeners y eventos disparados por el Socket.
+ * Interfaz que proporciona la comunicación entre los eventos disparados por el Socket y los manejadores de eventos.
  */
 public interface SocketListener {
     

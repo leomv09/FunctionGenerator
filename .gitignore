@@ -3,13 +3,13 @@
 *.bak
 
 # NetBeans Projects #
-Graficador/nbproject/private/
-Graficador/build/
-Graficador/nbbuild/
-Graficador/dist/
-Graficador/nbdist/
-Graficador/nbactions.xml
-Graficador/nb-configuration.xml
+distributions-graph/nbproject/private/
+distributions-graph/build/
+distributions-graph/nbbuild/
+distributions-graph/dist/
+distributions-graph/nbdist/
+distributions-graph/nbactions.xml
+distributions-graph/nb-configuration.xml
 
 # Class Files #
 *.class

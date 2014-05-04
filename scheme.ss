@@ -1,3 +1,11 @@
+; Instituto Tecnológico de Costa Rica.
+; IC-4700 Lenguajes de Programación.
+; II Proyecto Programado.
+; Integrantes:
+;    José Andrés García Sáenz <jags9415@gmail.com>.
+;    Leonardo Madrigal Valverde <lmadrigal09@gmail.com>.
+; I Semestre 2014.
+
 (define PI 3.141592653589793)
 
 ; Recibe: in = Un puerto de lectura.
@@ -25,7 +33,7 @@
       (else (* n (factorial (- n 1)))))))
 
 ; Recibe: n = Número.
-; Retorna: El cuadrado de n.
+; Retorna: El cuadrado del número ingresado.
 ; Ejemplo: (cuad 3) => 9.
 (define cuad
   (lambda (n)
@@ -39,17 +47,16 @@
   (lambda (n k)
     (/ (factorial n) (* (factorial k) (factorial (- n k))))))
 
-; Realiza el método compuesto de Simpson.
 ; Recibe: func = Función sobre la cual se va a calcular la integral.
 ;         a = Inicio del rango la integral.
 ;         b = Final del rango de la integral.
-; Retorna: Valor de la integral.
+; Retorna: Valor de la integral definida de func desde a hasta b.
 (define simpson
   (lambda (func a b)
     (* (/ (/ 1000) 3) (simpson-aux func a b (* (- b a) 1000)))))
 
-; Recibe: func = Función sobre la cual se va a calcular  la inegral.
-;         a = Inicio del rango la integral..
+; Recibe: func = Función sobre la cual se va a calcular la integral.
+;         a = Inicio del rango la integral.
 ;         b = Final del rango de la integral.
 ;         particiones: Cantidad de particiones en que se va a dividir la unidad.
 ; Retorna: Valor de la integral más un error que se basa en la cuarta derivación de la función.
@@ -59,7 +66,7 @@
 
 ; Recibe: func = Función que se va a aplicar.
 ;         es-par = Valor booleano que indica si un número es par.
-;         val-act = Valor actual(contador).
+;         val-act = Valor actual (contador).
 ;         tope =  Tope de la suma.
 ;         aumento = Valor en que se aumenta el contador.
 ;         acum = Valor acumulado de la suma.
@@ -73,10 +80,9 @@
             (suma-simpson
              func (not es-par) (+ val-act aumento) tope aumento (+ (* 4 (func val-act)) acum))))))
 
-; Función que genera una tabla acumulada a partir de una tabla de distribución.
-; Recibe; table = Tabla de distribución. 
+; Recibe: table = Tabla de distribución. 
 ;         acum = Tabla de valores acumulados.
-; Retorna: La tabla acumulada de una distribución.
+; Retorna: La tabla acumulada de la distribución.
 (define acumulada-aux
   (lambda (table acum)
     (cond
@@ -84,17 +90,15 @@
       ((null? acum) (acumulada-aux (cdr table) (append acum (list (car table)))))
       (else (acumulada-aux (cdr table) (append acum (list (list (caar table) (+ (cadar table) (second (last acum)))))))))))
 
-; Función que genera una tabla acumulada a partir de una tabla de distribución.
-; Recibe; table = Tabla de distribución.
-; Retorna: La tabla acumulada de una distribución.
+; Recibe: table = Tabla de distribución.
+; Retorna: La tabla acumulada de la distribución.
 (define acumulada
   (lambda (table)
     (acumulada-aux table '())))
 
-; Función que busca una probabilidad en una tabla acumulada de distribución.
 ; Recibe: x = Valor de la probabilidad.
 ;         table = Tabla acumulada de distribución.
-; Retorna: El primer valor K tal que la probabilidad de K sea mayor o igual a X.
+; Retorna: El primer valor K tal que la probabilidad de K sea mayor o igual a x.
 (define buscar-en-tabla
   (lambda (x table)
     (cond
@@ -115,6 +119,7 @@
 ; Recibe: rango = Rango de la tabla a generar. (ini fin interval)
 ;         fun = Una función para aplicarle a cada subintervalo del rango.
 ; Retorna: Una tabla que contiene pares de tipo (x (fun x)) donde x es cada subintervalo del rango
+; Ejemplo: (generar-tabla-continua '(0 1 0.2) (lambda (ini fin) (+ ini fin))) => ((0 -0.2) (0.2 0.2) (0.4 0.6) (0.6 1.0) (0.8 1.4) (1.0 1.8)).
 (define generar-tabla-continua
   (lambda (rango func)
     (cond
@@ -123,7 +128,7 @@
 
 ; Recibe: n = La cantidad de experimentos.
 ;         p = La probabilidad de éxito.
-; Retorna: Una función λ que dado un valor k retorne la probabilidad de ser escogido.
+; Retorna: Una función λ que dado un valor k retorne la probabilidad de obtener k éxitos.
 ; Ejemplo: (binomial 15 0.3).
 (define binomial
   (lambda (n p)
@@ -131,7 +136,7 @@
       (* (combinacion n k) (expt p k) (expt (- 1 p) (- n k))))))
 
 ; Recibe: p = La probabilidad de éxito.
-; Retorna: Una función λ que dado un valor k retorne la probabilidad de ser escogido.
+; Retorna: Una función λ que dado un valor k retorne la probabilidad de obtener k fracasos antes del primer éxito.
 ; Ejemplo: (geometrica 0.3).
 (define geometrica
   (lambda (p)
@@ -141,7 +146,7 @@
 ; Recibe: N = Tamaño de la población.
 ;         d = Cantidad de los “exitosos”.
 ;         n = Muestra seleccionada.
-; Retorna: Una función λ que dado un valor k retorne la probabilidad de ser escogido.
+; Retorna: Una función λ que dado un valor k retorne la probabilidad de obtener k éxitos.
 ; Ejemplo: (hipergeometrica 100 15 30).
 (define hipergeometrica
   (lambda (N d n)
@@ -149,7 +154,7 @@
       (/ (* (combinacion d k) (combinacion (- N d) (- n k))) (combinacion N n)))))
 
 ; Recibe: m = Valor de la media.
-; Retorna: Una función λ que dado un valor k retorne la probabilidad de ser escogido.
+; Retorna: Una función λ que dado un valor k retorne la probabilidad de obtener un resultado exitoso.
 ; Ejemplo: (poisson 3).
 (define poisson
   (lambda (m)
@@ -186,7 +191,7 @@
 ; Recibe: m = Media.
 ;         s = Desviación estándar.
 ; Retorna: Una función λ que dado un valor k retorne la probabilidad de ser escogido.
-; Ejemplo (normal 0 1)
+; Ejemplo (normal 0 1).
 (define normal
   (lambda (m s)
     (lambda (k)
@@ -209,7 +214,7 @@
 ; Función que se encarga de eviar los datos al servidor de las funciones de tipo uniformes.
 ; Recibe: i = Contador de datos enviados.
 ;         n = Cantidad de datos a enviar.
-;         func = Función a aplicar a los datos.
+;         func = Función a aplicar.
 ;         out = Puerto de escritura.
 (define send-data-uniform
   (lambda (i n func out)
